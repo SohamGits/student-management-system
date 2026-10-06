@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Management System | Login</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <div class="auth-header">
+                <h1>Student Management System</h1>
+                <p>Sign in to continue</p>
+            </div>
+
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div class="role-selection">
+                    <p>Login as:</p>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="role"
+                            value="student"
+                            checked
+                        >
+                        Student
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="role"
+                            value="teacher"
+                        >
+                        Teacher
+                    </label>
+                </div>
+
+                <button type="submit" class="primary-button">
+                    Login
+                </button>
+
+            </form>
+
+            <div class="auth-footer">
+                <a href="#">Forgot password?</a>
+
+                <p>
+                    Don't have an account?
+                    <a href="{% url 'register' %}">Register</a>
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

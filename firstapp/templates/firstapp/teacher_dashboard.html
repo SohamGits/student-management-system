@@ -1,0 +1,41 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teacher Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <main class="dashboard-container">
+
+        <div class="dashboard-card">
+
+            <h1>Teacher Dashboard</h1>
+
+            <p>
+                Welcome, {{ user.username }}!
+            </p>
+
+            <p>
+                You are logged in as a teacher.
+            </p>
+
+            <a href="{% url 'logout' %}" class="primary-button">
+                Logout
+            </a>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

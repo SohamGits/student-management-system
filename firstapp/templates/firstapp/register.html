@@ -1,0 +1,189 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Management System | Register</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Register for the Student Management System</p>
+            </div>
+            {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Choose a username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+
+                    <input
+                        type="date"
+                        id="dob"
+                        name="dob"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Confirm your password"
+                        required
+                    >
+                </div>
+
+                <div class="role-selection">
+
+                    <p>Register as:</p>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="role"
+                            value="student"
+                            checked
+                            onchange="toggleTeacherKey()"
+                        >
+                        Student
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="role"
+                            value="teacher"
+                            onchange="toggleTeacherKey()"
+                        >
+                        Teacher
+                    </label>
+
+                </div>
+
+                <div
+                    class="form-group"
+                    id="teacher-key-container"
+                    style="display: none;"
+                >
+
+                    <label for="teacher_key">Classroom Key</label>
+
+                    <input
+                        type="text"
+                        id="teacher_key"
+                        name="teacher_key"
+                        placeholder="Enter classroom key"
+                    >
+
+                    <small>
+                        Enter the key provided for your classroom.
+                    </small>
+
+                </div>
+
+                <button type="submit" class="primary-button">
+                    Register
+                </button>
+
+            </form>
+
+            <div class="auth-footer">
+
+                <p>
+                    Already have an account?
+                    <a href="{% url 'login' %}">Login</a>
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        function toggleTeacherKey() {
+
+            const teacherSelected =
+                document.querySelector(
+                    'input[name="role"]:checked'
+                ).value === "teacher";
+
+            const teacherKeyContainer =
+                document.getElementById("teacher-key-container");
+
+            const teacherKey =
+                document.getElementById("teacher_key");
+
+            if (teacherSelected) {
+
+                teacherKeyContainer.style.display = "block";
+                teacherKey.required = true;
+
+            } else {
+
+                teacherKeyContainer.style.display = "none";
+                teacherKey.required = false;
+                teacherKey.value = "";
+
+            }
+        }
+    </script>
+
+</body>
+</html>
