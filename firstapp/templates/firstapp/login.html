@@ -5,21 +5,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Student Management System | Login</title>
+    <title>Login</title>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
 
-    <main class="auth-container">
+    <div class="auth-container">
 
-        <section class="auth-card">
+        <div class="auth-card">
 
             <div class="auth-header">
-                <h1>Student Management System</h1>
-                <p>Sign in to continue</p>
+                <h1>Welcome Back</h1>
+                <p>Login to your account</p>
             </div>
 
             {% if error %}
@@ -29,7 +28,6 @@
             {% endif %}
 
             <form method="POST" action="{% url 'login' %}">
-
                 {% csrf_token %}
 
                 <div class="form-group">
@@ -55,6 +53,7 @@
                 </div>
 
                 <div class="role-selection">
+
                     <p>Login as:</p>
 
                     <label>
@@ -62,7 +61,7 @@
                             type="radio"
                             name="role"
                             value="student"
-                            checked
+                            required
                         >
                         Student
                     </label>
@@ -75,6 +74,7 @@
                         >
                         Teacher
                     </label>
+
                 </div>
 
                 <button type="submit" class="primary-button">
@@ -84,17 +84,23 @@
             </form>
 
             <div class="auth-footer">
-                <a href="#">Forgot password?</a>
+
+                <a href="#">
+                    Forgot Password?
+                </a>
 
                 <p>
                     Don't have an account?
-                    <a href="{% url 'register' %}">Register</a>
+                    <a href="{% url 'register' %}">
+                        Register
+                    </a>
                 </p>
+
             </div>
 
-        </section>
+        </div>
 
-    </main>
+    </div>
 
 </body>
 </html>

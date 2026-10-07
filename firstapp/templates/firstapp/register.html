@@ -5,46 +5,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Student Management System | Register</title>
+    <title>Register</title>
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
 
-    <main class="auth-container">
+    <div class="auth-container">
 
-        <section class="auth-card">
+        <div class="auth-card">
 
             <div class="auth-header">
                 <h1>Create Account</h1>
-                <p>Register for the Student Management System</p>
+                <p>Register as a student or teacher</p>
             </div>
+
             {% if error %}
                 <div class="error-message">
                     {{ error }}
                 </div>
             {% endif %}
-            <form method="POST">
 
+            <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
 
                 <div class="form-group">
                     <label for="username">Username</label>
-
                     <input
                         type="text"
                         id="username"
                         name="username"
-                        placeholder="Choose a username"
+                        placeholder="Enter your username"
                         required
                     >
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email</label>
-
                     <input
                         type="email"
                         id="email"
@@ -56,7 +54,6 @@
 
                 <div class="form-group">
                     <label for="dob">Date of Birth</label>
-
                     <input
                         type="date"
                         id="dob"
@@ -64,10 +61,8 @@
                         required
                     >
                 </div>
-
                 <div class="form-group">
                     <label for="password">Password</label>
-
                     <input
                         type="password"
                         id="password"
@@ -76,10 +71,8 @@
                         required
                     >
                 </div>
-
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
-
                     <input
                         type="password"
                         id="confirm_password"
@@ -88,22 +81,18 @@
                         required
                     >
                 </div>
-
                 <div class="role-selection">
-
-                    <p>Register as:</p>
-
+                    <p>Select your role:</p>
                     <label>
                         <input
                             type="radio"
                             name="role"
                             value="student"
-                            checked
                             onchange="toggleTeacherKey()"
+                            required
                         >
                         Student
                     </label>
-
                     <label>
                         <input
                             type="radio"
@@ -121,66 +110,56 @@
                     id="teacher-key-container"
                     style="display: none;"
                 >
-
                     <label for="teacher_key">Classroom Key</label>
 
                     <input
                         type="text"
                         id="teacher_key"
                         name="teacher_key"
-                        placeholder="Enter classroom key"
+                        placeholder="Enter teacher classroom key"
                     >
 
                     <small>
-                        Enter the key provided for your classroom.
+                        Required only for teacher registration.
                     </small>
-
                 </div>
 
                 <button type="submit" class="primary-button">
-                    Register
+                    Create Account
                 </button>
 
             </form>
-
             <div class="auth-footer">
-
                 <p>
                     Already have an account?
-                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'login' %}">
+                        Login
+                    </a>
                 </p>
-
             </div>
-
-        </section>
-
-    </main>
-
+        </div>
+    </div>
     <script>
         function toggleTeacherKey() {
+            const teacherRole = document.querySelector(
+                'input[name="role"][value="teacher"]'
+            );
 
-            const teacherSelected =
-                document.querySelector(
-                    'input[name="role"]:checked'
-                ).value === "teacher";
+            const teacherKeyContainer = document.getElementById(
+                "teacher-key-container"
+            );
 
-            const teacherKeyContainer =
-                document.getElementById("teacher-key-container");
+            const teacherKeyInput = document.getElementById(
+                "teacher_key"
+            );
 
-            const teacherKey =
-                document.getElementById("teacher_key");
-
-            if (teacherSelected) {
-
+            if (teacherRole.checked) {
                 teacherKeyContainer.style.display = "block";
-                teacherKey.required = true;
-
+                teacherKeyInput.required = true;
             } else {
-
                 teacherKeyContainer.style.display = "none";
-                teacherKey.required = false;
-                teacherKey.value = "";
-
+                teacherKeyInput.required = false;
+                teacherKeyInput.value = "";
             }
         }
     </script>

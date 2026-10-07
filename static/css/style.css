@@ -155,3 +155,56 @@ body {
     background: #f4f6f9;
     border-radius: 8px;
 }
+
+.primary-button {
+    width: 100%;
+    padding: 13px 18px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.role-selection {
+    margin: 24px 0;
+    padding: 16px 18px;
+}
+
+.role-selection p {
+    margin: 0 0 12px;
+}
+
+.role-selection label {
+    margin-right: 20px;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+}
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 40px;
+    box-sizing: border-box;
+}

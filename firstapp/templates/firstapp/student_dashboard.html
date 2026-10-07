@@ -2,44 +2,33 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Student Dashboard</title>
-
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
 <body>
-
-    <main class="dashboard-container">
-
+    <div class="dashboard-container">
         <div class="dashboard-card">
-
-            <h1>Student Dashboard</h1>
-
-            <p>
-                Welcome, {{ user.username }}!
-            </p>
-
-            {% if classroom %}
-                <p class="dashboard-message">
-                    You are enrolled in: {{ classroom.name }}
-                </p>
-            {% else %}
-                <p class="dashboard-message">
-                    You're not enrolled in any classes.
-                </p>
-            {% endif %}
-
-            <a href="{% url 'logout' %}" class="primary-button">
-                Logout
-            </a>
-
+            <div class="dashboard-header">
+                <div>
+                    <h1>Student Dashboard</h1>
+                    <p>Welcome, {{ user.username }}!</p>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-button">
+                    Logout
+                </a>
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-message">
+                    <h2>My Classroom</h2>
+                    <p>
+                        You're not enrolled in any classes.
+                    </p>
+                </div>
+            </div>
         </div>
-
-    </main>
+    </div>
 </body>
 </html>
