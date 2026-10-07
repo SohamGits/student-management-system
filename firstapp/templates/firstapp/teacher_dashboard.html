@@ -6,9 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Teacher Dashboard</title>
-
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
@@ -20,17 +18,40 @@
 
             <h1>Teacher Dashboard</h1>
 
-            <p>
-                Welcome, {{ user.username }}!
-            </p>
+            <p>Welcome, {{ user.username }}!</p>
 
-            <p>
-                You are logged in as a teacher.
-            </p>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="dashboard-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
 
-            <a href="{% url 'logout' %}" class="primary-button">
-                Logout
-            </a>
+            {% if classroom %}
+                <h2>{{ classroom.name }}</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="email" name="student_email"
+                           placeholder="Student email" required>
+                    <button type="submit" class="primary-button">Add student</button>
+                </form>
+
+                <h3>Enrolled students</h3>
+
+                {% if students %}
+                    <ul>
+                        {% for student in students %}
+                            <li>{{ student.username }} ({{ student.email }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No students added yet.</p>
+                {% endif %}
+            {% else %}
+                <p>You are not assigned to a classroom.</p>
+            {% endif %}
+
+            <a href="{% url 'logout' %}" class="primary-button">Logout</a>
 
         </div>
 

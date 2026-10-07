@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from .models import UserProfile, Classroom
 
@@ -125,9 +126,51 @@ def register(request):
 
 @login_required
 def student_dashboard(request):
-    return render(request, "firstapp/student_dashboard.html")
+    if request.user.profile.role != "student":
+        return redirect("teacher_dashboard")
+
+    classroom = request.user.student_classrooms.first()
+
+    return render(
+        request,
+        "firstapp/student_dashboard.html",
+        {"classroom": classroom}
+    )
 
 
 @login_required
 def teacher_dashboard(request):
-    return render(request, "firstapp/teacher_dashboard.html")
+    if request.user.profile.role != "teacher":
+        return redirect("student_dashboard")
+
+    classroom = request.user.teaching_classrooms.first()
+
+    if request.method == "POST":
+        email = request.POST.get("student_email", "").strip()
+
+        student_profile = UserProfile.objects.filter(
+            user__email__iexact=email,
+            role="student"
+        ).select_related("user").first()
+
+        if student_profile is None:
+            messages.error(request, "No student account found with that email.")
+        elif classroom.students.filter(pk=student_profile.user.pk).exists():
+            messages.info(request, "That student is already in the classroom.")
+        else:
+            classroom.students.add(student_profile.user)
+            messages.success(
+                request,
+                f"{student_profile.user.username} was added to {classroom.name}."
+            )
+
+        return redirect("teacher_dashboard")
+
+    return render(
+        request,
+        "firstapp/teacher_dashboard.html",
+        {
+            "classroom": classroom,
+            "students": classroom.students.all() if classroom else [],
+        }
+    )

@@ -24,9 +24,15 @@
                 Welcome, {{ user.username }}!
             </p>
 
-            <p class="dashboard-message">
-                You're not enrolled in any classes.
-            </p>
+            {% if classroom %}
+                <p class="dashboard-message">
+                    You are enrolled in: {{ classroom.name }}
+                </p>
+            {% else %}
+                <p class="dashboard-message">
+                    You're not enrolled in any classes.
+                </p>
+            {% endif %}
 
             <a href="{% url 'logout' %}" class="primary-button">
                 Logout
@@ -35,7 +41,5 @@
         </div>
 
     </main>
-
 </body>
-
 </html>
