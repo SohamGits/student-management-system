@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import UserProfile, Classroom, Assignment
 
 from .models import UserProfile, Classroom
 
@@ -172,5 +173,32 @@ def teacher_dashboard(request):
         {
             "classroom": classroom,
             "students": classroom.students.all() if classroom else [],
+            "assignments": classroom.assignments.all() if classroom else [],
         }
     )
+
+@login_required
+def create_assignment(request):
+    if request.user.profile.role != "teacher":
+        return redirect("student_dashboard")
+
+    classroom = request.user.teaching_classrooms.first()
+
+    if request.method == "POST" and classroom:
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
+        deadline = request.POST.get("deadline")
+
+        if not title or not deadline:
+            messages.error(request, "Title and deadline are required.")
+        else:
+            Assignment.objects.create(
+                classroom=classroom,
+                teacher=request.user,
+                title=title,
+                description=description,
+                deadline=deadline
+            )
+            messages.success(request, f'Assignment "{title}" created.')
+
+    return redirect("teacher_dashboard")

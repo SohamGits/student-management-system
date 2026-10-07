@@ -1,43 +1,44 @@
+Teacher dashboard · HTML
 {% load static %}
-
+ 
 <!DOCTYPE html>
 <html lang="en">
-
+ 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
+ 
 <body>
-
+ 
     <main class="dashboard-container">
-
+ 
         <div class="dashboard-card">
-
+ 
             <h1>Teacher Dashboard</h1>
-
+ 
             <p>Welcome, {{ user.username }}!</p>
-
+ 
             {% if messages %}
                 {% for message in messages %}
                     <p class="dashboard-message">{{ message }}</p>
                 {% endfor %}
             {% endif %}
-
+ 
             {% if classroom %}
                 <h2>{{ classroom.name }}</h2>
-
+ 
                 <form method="post">
                     {% csrf_token %}
                     <input type="email" name="student_email"
                            placeholder="Student email" required>
                     <button type="submit" class="primary-button">Add student</button>
                 </form>
-
+ 
                 <h3>Enrolled students</h3>
-
+ 
                 {% if students %}
                     <ul>
                         {% for student in students %}
@@ -47,16 +48,40 @@
                 {% else %}
                     <p>No students added yet.</p>
                 {% endif %}
+ 
+                <h3>Create assignment</h3>
+ 
+                <form method="post" action="{% url 'create_assignment' %}">
+                    {% csrf_token %}
+                    <input type="text" name="title" placeholder="Title" required>
+                    <textarea name="description" placeholder="Description"></textarea>
+                    <input type="datetime-local" name="deadline" required>
+                    <button type="submit" class="primary-button">Create</button>
+                </form>
+ 
+                <h3>Assignments</h3>
+ 
+                {% if assignments %}
+                    <ul>
+                        {% for assignment in assignments %}
+                            <li>
+                                <strong>{{ assignment.title }}</strong>
+                                (due {{ assignment.deadline|date:"d M Y, H:i" }})
+                                by {{ assignment.teacher.username }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No assignments yet.</p>
+                {% endif %}
             {% else %}
                 <p>You are not assigned to a classroom.</p>
             {% endif %}
-
+ 
             <a href="{% url 'logout' %}" class="primary-button">Logout</a>
-
+ 
         </div>
-
+ 
     </main>
-
 </body>
-
 </html>
