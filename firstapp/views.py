@@ -188,16 +188,20 @@ def create_assignment(request):
         title = request.POST.get("title", "").strip()
         description = request.POST.get("description", "").strip()
         deadline = request.POST.get("deadline")
+        attachment = request.FILES.get("attachment")
 
         if not title or not deadline:
             messages.error(request, "Title and deadline are required.")
+        elif attachment and attachment.size > 10 * 1024 * 1024:
+            messages.error(request, "Attachment must be 10 MB or smaller.")
         else:
             Assignment.objects.create(
                 classroom=classroom,
                 teacher=request.user,
                 title=title,
                 description=description,
-                deadline=deadline
+                deadline=deadline,
+                attachment=attachment
             )
             messages.success(request, f'Assignment "{title}" created.')
 

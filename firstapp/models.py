@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -61,6 +62,11 @@ class Assignment(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     deadline = models.DateTimeField()
+    attachment = models.FileField(
+        upload_to="assignment_attachments/",
+        blank=True,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -68,3 +74,6 @@ class Assignment(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def attachment_name(self):
+        return os.path.basename(self.attachment.name)
