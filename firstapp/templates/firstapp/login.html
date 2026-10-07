@@ -1,106 +1,80 @@
-{% load static %}
+{% extends 'firstapp/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+{% block title %}Login{% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center py-5 auth-wrapper">
 
-<body>
+    <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
 
-    <div class="auth-container">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
 
-        <div class="auth-card">
-
-            <div class="auth-header">
-                <h1>Welcome Back</h1>
-                <p>Login to your account</p>
-            </div>
-
-            {% if error %}
-                <div class="error-message">
-                    {{ error }}
-                </div>
-            {% endif %}
-
-            <form method="POST" action="{% url 'login' %}">
-                {% csrf_token %}
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        required
-                    >
+                <div class="text-center mb-4">
+                    <h1 class="h3 fw-bold">Welcome Back</h1>
+                    <p class="text-muted mb-0">Login to your account</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        required
-                    >
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email"
+                               name="email" placeholder="Email" required>
+                        <label for="email">Email</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="password"
+                               name="password" placeholder="Password" required>
+                        <label for="password">Password</label>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="fw-semibold mb-2">Login as:</div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="role"
+                                   id="role-student" value="student" required>
+                            <label class="form-check-label" for="role-student">
+                                Student
+                            </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="role"
+                                   id="role-teacher" value="teacher">
+                            <label class="form-check-label" for="role-teacher">
+                                Teacher
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        Login
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <a href="#" class="text-decoration-none">Forgot Password?</a>
+
+                    <p class="text-muted mt-3 mb-0">
+                        Don't have an account?
+                        <a href="{% url 'register' %}"
+                           class="fw-semibold text-decoration-none">Register</a>
+                    </p>
                 </div>
-
-                <div class="role-selection">
-
-                    <p>Login as:</p>
-
-                    <label>
-                        <input
-                            type="radio"
-                            name="role"
-                            value="student"
-                            required
-                        >
-                        Student
-                    </label>
-
-                    <label>
-                        <input
-                            type="radio"
-                            name="role"
-                            value="teacher"
-                        >
-                        Teacher
-                    </label>
-
-                </div>
-
-                <button type="submit" class="primary-button">
-                    Login
-                </button>
-
-            </form>
-
-            <div class="auth-footer">
-
-                <a href="#">
-                    Forgot Password?
-                </a>
-
-                <p>
-                    Don't have an account?
-                    <a href="{% url 'register' %}">
-                        Register
-                    </a>
-                </p>
 
             </div>
-
         </div>
 
     </div>
 
-</body>
-</html>
+</div>
+{% endblock %}

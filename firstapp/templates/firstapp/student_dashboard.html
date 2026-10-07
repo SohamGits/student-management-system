@@ -1,34 +1,43 @@
-{% load static %}
+{% extends 'firstapp/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="dashboard-container">
-        <div class="dashboard-card">
-            <div class="dashboard-header">
-                <div>
-                    <h1>Student Dashboard</h1>
-                    <p>Welcome, {{ user.username }}!</p>
-                </div>
-                <a href="{% url 'logout' %}" class="logout-button">
-                    Logout
-                </a>
-            </div>
-            <div class="dashboard-content">
-                <div class="dashboard-message">
-                    <h2>My Classroom</h2>
-                    <p>
-                        You're not enrolled in any classes.
-                    </p>
-                </div>
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="h3 fw-bold mb-1">Student Dashboard</h1>
+        <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
+    </div>
+
+    {% if classroom %}
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 fw-bold">{{ classroom.name }}</h2>
+                <p class="text-muted">You are enrolled in this classroom.</p>
+
+                <div class="fw-semibold mb-2">Teachers</div>
+                {% for teacher in classroom.teachers.all %}
+                    <span class="badge text-bg-primary me-1">{{ teacher.username }}</span>
+                {% empty %}
+                    <span class="text-muted">No teachers yet.</span>
+                {% endfor %}
             </div>
         </div>
-    </div>
-</body>
-</html>
+
+    {% else %}
+
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <h2 class="h5 fw-bold">You're not enrolled in any classes.</h2>
+                <p class="text-muted mb-0">
+                    A teacher will add you to their classroom using your email address.
+                </p>
+            </div>
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

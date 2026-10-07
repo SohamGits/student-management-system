@@ -1,86 +1,172 @@
-{% load static %}
- 
-<!DOCTYPE html>
-<html lang="en">
- 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
- 
-<body>
- 
-    <main class="dashboard-container">
- 
-        <div class="dashboard-card">
- 
-            <h1>Teacher Dashboard</h1>
- 
-            <p>Welcome, {{ user.username }}!</p>
- 
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="dashboard-message">{{ message }}</p>
-                {% endfor %}
-            {% endif %}
- 
-            {% if classroom %}
-                <h2>{{ classroom.name }}</h2>
- 
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="email" name="student_email"
-                           placeholder="Student email" required>
-                    <button type="submit" class="primary-button">Add student</button>
-                </form>
- 
-                <h3>Enrolled students</h3>
- 
-                {% if students %}
-                    <ul>
-                        {% for student in students %}
-                            <li>{{ student.username }} ({{ student.email }})</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No students added yet.</p>
-                {% endif %}
- 
-                <h3>Create assignment</h3>
- 
-                <form method="post" action="{% url 'create_assignment' %}">
-                    {% csrf_token %}
-                    <input type="text" name="title" placeholder="Title" required>
-                    <textarea name="description" placeholder="Description"></textarea>
-                    <input type="datetime-local" name="deadline" required>
-                    <button type="submit" class="primary-button">Create</button>
-                </form>
- 
-                <h3>Assignments</h3>
- 
-                {% if assignments %}
-                    <ul>
-                        {% for assignment in assignments %}
-                            <li>
-                                <strong>{{ assignment.title }}</strong>
-                                (due {{ assignment.deadline|date:"d M Y, H:i" }})
-                                by {{ assignment.teacher.username }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No assignments yet.</p>
-                {% endif %}
-            {% else %}
-                <p>You are not assigned to a classroom.</p>
-            {% endif %}
- 
-            <a href="{% url 'logout' %}" class="primary-button">Logout</a>
- 
+{% extends 'firstapp/base.html' %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1 class="h3 fw-bold mb-1">Teacher Dashboard</h1>
+        <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
+    </div>
+
+    {% if classroom %}
+
+        <div class="row g-4">
+
+            <!-- Left column: students -->
+            <div class="col-lg-5">
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="h5 fw-bold">Add student</h2>
+                        <p class="text-muted small">
+                            Classroom: <strong>{{ classroom.name }}</strong>
+                        </p>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="email" class="form-control"
+                                       name="student_email"
+                                       placeholder="Student email" required>
+                                <button type="submit" class="btn btn-primary">
+                                    Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0">Enrolled students</h2>
+                        <span class="badge text-bg-secondary">{{ students|length }}</span>
+                    </div>
+
+                    {% if students %}
+                        <ul class="list-group list-group-flush">
+                            {% for student in students %}
+                                <li class="list-group-item">
+                                    <div class="fw-semibold">{{ student.username }}</div>
+                                    <div class="text-muted small text-break">
+                                        {{ student.email }}
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="card-body text-muted">
+                            No students added yet.
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right column: assignments -->
+            <div class="col-lg-7">
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="h5 fw-bold mb-3">Create assignment</h2>
+
+                        <form method="post" action="{% url 'create_assignment' %}"
+                              enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title"
+                                       name="title" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">
+                                    Description
+                                </label>
+                                <textarea class="form-control" id="description"
+                                          name="description" rows="3"></textarea>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="deadline" class="form-label">
+                                        Deadline
+                                    </label>
+                                    <input type="datetime-local" class="form-control"
+                                           id="deadline" name="deadline" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="attachment" class="form-label">
+                                        Attachment (optional)
+                                    </label>
+                                    <input type="file" class="form-control"
+                                           id="attachment" name="attachment">
+                                    <div class="form-text">Max 10 MB.</div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                Create assignment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h2 class="h5 fw-bold mb-0">Assignments</h2>
+                        <span class="badge text-bg-secondary">{{ assignments|length }}</span>
+                    </div>
+
+                    {% if assignments %}
+                        <ul class="list-group list-group-flush">
+                            {% for assignment in assignments %}
+                                <li class="list-group-item">
+
+                                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                        <div class="fw-semibold">{{ assignment.title }}</div>
+                                        <span class="badge text-bg-warning">
+                                            Due {{ assignment.deadline|date:"d M Y, H:i" }}
+                                        </span>
+                                    </div>
+
+                                    {% if assignment.description %}
+                                        <p class="text-muted small mb-2 mt-1 assignment-description">{{ assignment.description }}</p>
+                                    {% endif %}
+
+                                    <div class="text-muted small">
+                                        Posted by {{ assignment.teacher.username }}
+                                    </div>
+
+                                    {% if assignment.attachment %}
+                                        <a href="{{ assignment.attachment.url }}" download
+                                           class="btn btn-outline-primary btn-sm mt-2">
+                                            📎 {{ assignment.attachment_name }}
+                                        </a>
+                                    {% endif %}
+
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="card-body text-muted">
+                            No assignments yet.
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
         </div>
- 
-    </main>
-</body>
-</html>
+
+    {% else %}
+        <div class="alert alert-warning">
+            You are not assigned to a classroom.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

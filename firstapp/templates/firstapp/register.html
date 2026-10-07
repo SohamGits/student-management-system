@@ -1,168 +1,147 @@
-{% load static %}
+{% extends 'firstapp/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+{% block title %}Register{% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center py-5 auth-wrapper">
 
-<body>
+    <div class="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
 
-    <div class="auth-container">
+        <div class="card shadow-sm">
+            <div class="card-body p-4 p-md-5">
 
-        <div class="auth-card">
-
-            <div class="auth-header">
-                <h1>Create Account</h1>
-                <p>Register as a student or teacher</p>
-            </div>
-
-            {% if error %}
-                <div class="error-message">
-                    {{ error }}
-                </div>
-            {% endif %}
-
-            <form method="POST" action="{% url 'register' %}">
-                {% csrf_token %}
-
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        placeholder="Enter your username"
-                        required
-                    >
+                <div class="text-center mb-4">
+                    <h1 class="h3 fw-bold">Create Account</h1>
+                    <p class="text-muted mb-0">Register as a student or teacher</p>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        required
-                    >
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'register' %}">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="username"
+                                       name="username" placeholder="Username" required>
+                                <label for="username">Username</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email"
+                                       name="email" placeholder="Email" required>
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" id="dob"
+                                       name="dob" placeholder="Date of Birth" required>
+                                <label for="dob">Date of Birth</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password"
+                                       name="password" placeholder="Password" required>
+                                <label for="password">Password</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="password" class="form-control"
+                                       id="confirm_password" name="confirm_password"
+                                       placeholder="Confirm Password" required>
+                                <label for="confirm_password">Confirm Password</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="fw-semibold mb-2">Select your role:</div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="role"
+                                       id="role-student" value="student"
+                                       onchange="toggleTeacherKey()" required>
+                                <label class="form-check-label" for="role-student">
+                                    Student
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="role"
+                                       id="role-teacher" value="teacher"
+                                       onchange="toggleTeacherKey()">
+                                <label class="form-check-label" for="role-teacher">
+                                    Teacher
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 d-none" id="teacher-key-container">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="teacher_key"
+                                       name="teacher_key" placeholder="Classroom Key">
+                                <label for="teacher_key">Classroom Key</label>
+                            </div>
+                            <div class="form-text">
+                                Required only for teacher registration.
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100 py-2">
+                                Create Account
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted mb-0">
+                        Already have an account?
+                        <a href="{% url 'login' %}"
+                           class="fw-semibold text-decoration-none">Login</a>
+                    </p>
                 </div>
 
-                <div class="form-group">
-                    <label for="dob">Date of Birth</label>
-                    <input
-                        type="date"
-                        id="dob"
-                        name="dob"
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Create a password"
-                        required
-                    >
-                </div>
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <input
-                        type="password"
-                        id="confirm_password"
-                        name="confirm_password"
-                        placeholder="Confirm your password"
-                        required
-                    >
-                </div>
-                <div class="role-selection">
-                    <p>Select your role:</p>
-                    <label>
-                        <input
-                            type="radio"
-                            name="role"
-                            value="student"
-                            onchange="toggleTeacherKey()"
-                            required
-                        >
-                        Student
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            name="role"
-                            value="teacher"
-                            onchange="toggleTeacherKey()"
-                        >
-                        Teacher
-                    </label>
-
-                </div>
-
-                <div
-                    class="form-group"
-                    id="teacher-key-container"
-                    style="display: none;"
-                >
-                    <label for="teacher_key">Classroom Key</label>
-
-                    <input
-                        type="text"
-                        id="teacher_key"
-                        name="teacher_key"
-                        placeholder="Enter teacher classroom key"
-                    >
-
-                    <small>
-                        Required only for teacher registration.
-                    </small>
-                </div>
-
-                <button type="submit" class="primary-button">
-                    Create Account
-                </button>
-
-            </form>
-            <div class="auth-footer">
-                <p>
-                    Already have an account?
-                    <a href="{% url 'login' %}">
-                        Login
-                    </a>
-                </p>
             </div>
         </div>
+
     </div>
-    <script>
-        function toggleTeacherKey() {
-            const teacherRole = document.querySelector(
-                'input[name="role"][value="teacher"]'
-            );
 
-            const teacherKeyContainer = document.getElementById(
-                "teacher-key-container"
-            );
+</div>
+{% endblock %}
 
-            const teacherKeyInput = document.getElementById(
-                "teacher_key"
-            );
+{% block scripts %}
+<script>
+    function toggleTeacherKey() {
+        const teacherRole = document.querySelector(
+            'input[name="role"][value="teacher"]'
+        );
+        const container = document.getElementById("teacher-key-container");
+        const keyInput = document.getElementById("teacher_key");
 
-            if (teacherRole.checked) {
-                teacherKeyContainer.style.display = "block";
-                teacherKeyInput.required = true;
-            } else {
-                teacherKeyContainer.style.display = "none";
-                teacherKeyInput.required = false;
-                teacherKeyInput.value = "";
-            }
+        if (teacherRole.checked) {
+            container.classList.remove("d-none");
+            keyInput.required = true;
+        } else {
+            container.classList.add("d-none");
+            keyInput.required = false;
+            keyInput.value = "";
         }
-    </script>
-
-</body>
-</html>
+    }
+</script>
+{% endblock %}
