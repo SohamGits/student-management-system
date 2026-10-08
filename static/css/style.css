@@ -21,3 +21,12 @@
     border-color: #198754;
     color: #fff;
 }
+
+/* Hides elements until GSAP sets their starting state (see animations.js) */
+html.gsap-pending .navbar,
+html.gsap-pending .card,
+html.gsap-pending .list-group-item,
+html.gsap-pending h1,
+html.gsap-pending h1 + p {
+    visibility: hidden;
+}
