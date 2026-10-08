@@ -1,5 +1,5 @@
 {% extends 'firstapp/base.html' %}
-
+{% load static %}
 {% block title %}Student Dashboard{% endblock %}
 
 {% block content %}
@@ -9,10 +9,9 @@
         <h1 class="h3 fw-bold mb-1">Student Dashboard</h1>
         <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
     </div>
-
     {% if classroom %}
 
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h2 class="h5 fw-bold">{{ classroom.name }}</h2>
                 <p class="text-muted">You are enrolled in this classroom.</p>
@@ -24,6 +23,46 @@
                     <span class="text-muted">No teachers yet.</span>
                 {% endfor %}
             </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 fw-bold mb-0">Assignments</h2>
+                <span class="badge text-bg-secondary">{{ assignments|length }}</span>
+            </div>
+
+            {% if assignments %}
+                <ul class="list-group list-group-flush">
+                    {% for assignment in assignments %}
+                        <li class="list-group-item">
+
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                <div class="fw-semibold">{{ assignment.title }}</div>
+                                {% include 'firstapp/_deadline_badge.html' %}
+                            </div>
+
+                            {% if assignment.description %}
+                                <p class="text-muted small mb-2 mt-1 assignment-description">{{ assignment.description }}</p>
+                            {% endif %}
+
+                            <div class="text-muted small">
+                                Posted by {{ assignment.teacher.username }}
+                            </div>
+
+                            {% if assignment.attachment %}
+                                <a href="{{ assignment.attachment.url }}" download
+                                   class="btn btn-outline-primary btn-sm mt-2">
+                                    📎 {{ assignment.attachment_name }}
+                                </a>
+                            {% endif %}
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="card-body text-muted">
+                    No assignments have been posted yet.
+                </div>
+            {% endif %}
         </div>
 
     {% else %}
@@ -40,4 +79,7 @@
     {% endif %}
 
 </div>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/deadlines.js' %}"></script>
 {% endblock %}

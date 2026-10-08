@@ -1,5 +1,5 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.urls import reverse
 
 from .models import Assignment, Classroom, UserProfile
@@ -73,7 +73,8 @@ class AssignmentEditViewTests(TestCase):
     def setUp(self):
         self.teacher = User.objects.create_user(
             username="assignment-teacher",
-            password="test-password",
+            email="assignment-teacher@example.com",
+            password="StrongPass!123",
         )
         UserProfile.objects.create(
             user=self.teacher,
@@ -143,7 +144,8 @@ class AssignmentEditViewTests(TestCase):
     def test_teacher_cannot_edit_another_teachers_assignment(self):
         other_teacher = User.objects.create_user(
             username="another-teacher",
-            password="test-password",
+            email="another-teacher@example.com",
+            password="StrongPass!123",
         )
         UserProfile.objects.create(
             user=other_teacher,

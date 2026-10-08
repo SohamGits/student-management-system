@@ -1,6 +1,8 @@
 import os
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 class UserProfile(models.Model):
@@ -25,6 +27,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
+
 
 class Classroom(models.Model):
     name = models.CharField(max_length=100)
@@ -74,6 +77,9 @@ class Assignment(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def attachment_name(self):
         return os.path.basename(self.attachment.name)
+
+    def is_overdue(self):
+        return timezone.now() > self.deadline

@@ -14,4 +14,5 @@ urlpatterns = [
         views.edit_assignment,
         name="edit_assignment",
     ),
+    path("forgot-password/", views.forgot_password, name="forgot_password"),
 ]

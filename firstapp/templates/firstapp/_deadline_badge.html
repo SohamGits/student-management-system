@@ -1,0 +1,13 @@
+{% if assignment.is_overdue %}
+    <span class="badge text-bg-danger deadline-badge"
+          data-deadline="{{ assignment.deadline|date:'c' }}"
+          data-label="{{ assignment.deadline|date:'d M Y, H:i' }}">
+        Overdue · {{ assignment.deadline|date:"d M Y, H:i" }}
+    </span>
+{% else %}
+    <span class="badge text-bg-warning deadline-badge"
+          data-deadline="{{ assignment.deadline|date:'c' }}"
+          data-label="{{ assignment.deadline|date:'d M Y, H:i' }}">
+        Due {{ assignment.deadline|date:"d M Y, H:i" }}
+    </span>
+{% endif %}
