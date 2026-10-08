@@ -11,6 +11,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
+from .forms import AssignmentEditForm
 from .models import UserProfile, Classroom, Assignment, Submission
 
 MAX_RESET_ATTEMPTS = 5
@@ -196,15 +197,6 @@ def teacher_dashboard(request):
             .select_related("teacher")
             .prefetch_related("submissions__student")
         )
-        for assignment in assignments:
-            submitted_ids = {
-                submission.student_id
-                for submission in assignment.submissions.all()
-            }
-            assignment.pending_students = [
-                student for student in students
-                if student.id not in submitted_ids
-            ]
 
     return render(
         request,

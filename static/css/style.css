@@ -30,3 +30,46 @@ html.gsap-pending h1,
 html.gsap-pending h1 + p {
     visibility: hidden;
 }
+
+/* ---------- GSAP buttons ---------- */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:not(:disabled):not(.disabled):hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.input-group .btn:not(:disabled):hover {
+    box-shadow: none;
+}
+
+.btn-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ---------- GSAP dropdown ---------- */
+.dd-toggle {
+    cursor: pointer;
+}
+
+.dd-toggle:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: -2px;
+}
+
+.dd-body {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.dd-chevron {
+    flex-shrink: 0;
+    transform-origin: 50% 50%;
+}

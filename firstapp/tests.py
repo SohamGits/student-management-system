@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Assignment, Classroom, UserProfile
+from .models import Assignment, Classroom, Submission, UserProfile
 
 
 class LoginViewTests(TestCase):
@@ -157,3 +157,57 @@ class AssignmentEditViewTests(TestCase):
         response = self.client.get(self.edit_url)
 
         self.assertEqual(response.status_code, 404)
+
+
+class TeacherDashboardSubmissionTests(TestCase):
+    def setUp(self):
+        self.teacher = User.objects.create_user(
+            username="dashboard-teacher",
+            email="dashboard-teacher@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.teacher,
+            date_of_birth="1985-01-01",
+            role="teacher",
+        )
+        self.student = User.objects.create_user(
+            username="submitted-student",
+            email="submitted-student@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.student,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.classroom = Classroom.objects.create(
+            name="Dashboard classroom",
+            key="DASHBOARD-CLASSROOM",
+        )
+        self.classroom.teachers.add(self.teacher)
+        self.classroom.students.add(self.student)
+        self.assignment = Assignment.objects.create(
+            classroom=self.classroom,
+            teacher=self.teacher,
+            title="Dashboard assignment",
+            deadline="2030-01-01T12:00:00Z",
+        )
+        self.client.force_login(self.teacher)
+        self.dashboard_url = reverse("teacher_dashboard")
+
+    def test_empty_assignment_shows_no_submissions_message(self):
+        response = self.client.get(self.dashboard_url)
+
+        self.assertContains(response, "No Submissions yet")
+
+    def test_assignment_with_submission_shows_submitter_without_empty_message(self):
+        Submission.objects.create(
+            assignment=self.assignment,
+            student=self.student,
+            file="assignment_1/submission.pdf",
+        )
+
+        response = self.client.get(self.dashboard_url)
+
+        self.assertContains(response, self.student.username)
+        self.assertNotContains(response, "No Submissions yet")
+        self.assertNotContains(response, "Not submitted:")

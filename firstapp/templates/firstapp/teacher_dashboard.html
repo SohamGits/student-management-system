@@ -1,30 +1,30 @@
 {% extends 'firstapp/base.html' %}
 {% load static %}
- 
+
 {% block title %}Teacher Dashboard{% endblock %}
- 
+
 {% block content %}
 <div class="container py-4">
- 
+
     <div class="mb-4">
         <h1 class="h3 fw-bold mb-1">Teacher Dashboard</h1>
         <p class="text-muted mb-0">Welcome, {{ user.username }}!</p>
     </div>
- 
+
     {% if classroom %}
- 
+
         <div class="row g-4">
- 
+
             <!-- Left column: students -->
             <div class="col-lg-5">
- 
+
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h2 class="h5 fw-bold">Add student</h2>
                         <p class="text-muted small">
                             Classroom: <strong>{{ classroom.name }}</strong>
                         </p>
- 
+
                         <form method="post">
                             {% csrf_token %}
                             <div class="input-group">
@@ -38,15 +38,31 @@
                         </form>
                     </div>
                 </div>
- 
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h2 class="h5 fw-bold mb-0">Enrolled students</h2>
-                        <span class="badge text-bg-secondary">{{ students|length }}</span>
-                    </div>
- 
-                    {% if students %}
-                        <ul class="list-group list-group-flush">
+
+                <!-- Enrolled students: animated dropdown -->
+                <div class="card shadow-sm" data-dropdown>
+
+                    <button type="button"
+                            class="card-header bg-white w-100 border-0 text-start d-flex justify-content-between align-items-center dd-toggle"
+                            data-dropdown-toggle
+                            aria-expanded="false"
+                            aria-controls="students-dropdown">
+                        <span class="h5 fw-bold mb-0">Enrolled students</span>
+
+                        <span class="d-flex align-items-center gap-2">
+                            <span class="badge text-bg-secondary">{{ students|length }}</span>
+                            <svg class="dd-chevron" xmlns="http://www.w3.org/2000/svg"
+                                 width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </span>
+                    </button>
+
+                    <div class="dd-body" id="students-dropdown" data-dropdown-body>
+                        <ul class="list-group list-group-flush border-top">
                             {% for student in students %}
                                 <li class="list-group-item">
                                     <div class="fw-semibold">{{ student.username }}</div>
@@ -54,34 +70,35 @@
                                         {{ student.email }}
                                     </div>
                                 </li>
+                            {% empty %}
+                                <li class="list-group-item text-muted">
+                                    No students added yet.
+                                </li>
                             {% endfor %}
                         </ul>
-                    {% else %}
-                        <div class="card-body text-muted">
-                            No students added yet.
-                        </div>
-                    {% endif %}
+                    </div>
+
                 </div>
- 
+
             </div>
- 
+
             <!-- Right column: assignments -->
             <div class="col-lg-7">
- 
+
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h2 class="h5 fw-bold mb-3">Create assignment</h2>
- 
+
                         <form method="post" action="{% url 'create_assignment' %}"
                               enctype="multipart/form-data">
                             {% csrf_token %}
- 
+
                             <div class="mb-3">
                                 <label for="title" class="form-label">Title</label>
                                 <input type="text" class="form-control" id="title"
                                        name="title" required>
                             </div>
- 
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">
                                     Description
@@ -89,7 +106,7 @@
                                 <textarea class="form-control" id="description"
                                           name="description" rows="3"></textarea>
                             </div>
- 
+
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label for="deadline" class="form-label">
@@ -98,7 +115,7 @@
                                     <input type="datetime-local" class="form-control"
                                            id="deadline" name="deadline" required>
                                 </div>
- 
+
                                 <div class="col-md-6">
                                     <label for="attachment" class="form-label">
                                         Attachment (optional)
@@ -108,38 +125,38 @@
                                     <div class="form-text">Max 10 MB.</div>
                                 </div>
                             </div>
- 
+
                             <button type="submit" class="btn btn-primary w-100">
                                 Create assignment
                             </button>
                         </form>
                     </div>
                 </div>
- 
+
                 <div class="card shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h2 class="h5 fw-bold mb-0">Assignments</h2>
                         <span class="badge text-bg-secondary">{{ assignments|length }}</span>
                     </div>
- 
+
                     {% if assignments %}
                         <ul class="list-group list-group-flush">
                             {% for assignment in assignments %}
                                 <li class="list-group-item">
- 
+
                                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
                                         <div class="fw-semibold">{{ assignment.title }}</div>
                                         {% include 'firstapp/_deadline_badge.html' %}
                                     </div>
- 
+
                                     {% if assignment.description %}
                                         <p class="text-muted small mb-2 mt-1 assignment-description">{{ assignment.description }}</p>
                                     {% endif %}
- 
+
                                     <div class="text-muted small">
                                         Posted by {{ assignment.teacher.username }}
                                     </div>
- 
+
                                     {% if assignment.teacher == user %}
                                         <div class="mt-3">
                                             <button class="btn btn-outline-secondary btn-sm"
@@ -152,10 +169,10 @@
                                                     {{ assignment.submissions.all|length }}/{{ students|length }}
                                                 </span>
                                             </button>
- 
+
                                             <div class="collapse mt-2"
                                                  id="submissions-{{ assignment.id }}">
- 
+
                                                 {% for submission in assignment.submissions.all %}
                                                     <div class="d-flex flex-wrap justify-content-between align-items-center border rounded px-3 py-2 mb-2">
                                                         <div>
@@ -176,19 +193,14 @@
                                                     </div>
                                                 {% empty %}
                                                     <p class="text-muted small mb-1">
-                                                        No submissions yet.
+                                                        No Submissions yet
                                                     </p>
                                                 {% endfor %}
- 
-                                                {% if assignment.pending_students %}
-                                                    <div class="small text-muted mt-2">
-                                                        Not submitted:
-                                                        {% for pending in assignment.pending_students %}{{ pending.username }}{% if not forloop.last %}, {% endif %}{% endfor %}
-                                                    </div>
-                                                {% endif %}
+
                                             </div>
                                         </div>
                                     {% endif %}
+
                                     <div class="d-flex justify-content-between align-items-end mt-2">
                                         <div>
                                             {% if assignment.attachment %}
@@ -198,6 +210,7 @@
                                                 </a>
                                             {% endif %}
                                         </div>
+
                                         {% if assignment.teacher == user %}
                                             <a href="{% url 'edit_assignment' assignment.id %}"
                                                class="btn btn-dark btn-sm"
@@ -213,6 +226,7 @@
                                             </a>
                                         {% endif %}
                                     </div>
+
                                 </li>
                             {% endfor %}
                         </ul>
@@ -222,7 +236,9 @@
                         </div>
                     {% endif %}
                 </div>
+
             </div>
+
         </div>
 
     {% else %}
@@ -233,6 +249,8 @@
 
 </div>
 {% endblock %}
+
 {% block scripts %}
 <script src="{% static 'js/deadlines.js' %}"></script>
+<script src="{% static 'js/dropdown.js' %}"></script>
 {% endblock %}

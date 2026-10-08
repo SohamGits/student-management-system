@@ -71,8 +71,11 @@
       });
     }
 
-    // 7. List items (students, assignments) reveal as they scroll into view
-    const items = gsap.utils.toArray(".list-group-item");
+    // 7. List items (assignments etc.) reveal as they scroll into view.
+    //    Items inside an animated dropdown are skipped: dropdown.js animates those.
+    const items = gsap.utils
+      .toArray(".list-group-item")
+      .filter((el) => !el.closest("[data-dropdown]"));
     if (items.length) {
       gsap.set(items, { autoAlpha: 0, y: 20 });
       ScrollTrigger.batch(items, {
@@ -101,17 +104,56 @@
       });
     });
 
-    // 9. Button hover lift / press (skips input-group buttons so they stay aligned)
+    // 9. Buttons: lift + scale on hover, elastic spring-back, squish on press,
+    //    and a click ripple. Input-group buttons skip the lift so they stay aligned.
+    function ripple(btn, event) {
+      if (btn.disabled) return;
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 2;
+      const dot = document.createElement("span");
+      dot.className = "btn-ripple";
+      dot.style.width = size + "px";
+      dot.style.height = size + "px";
+      dot.style.left = event.clientX - rect.left - size / 2 + "px";
+      dot.style.top = event.clientY - rect.top - size / 2 + "px";
+      btn.appendChild(dot);
+      gsap.fromTo(
+        dot,
+        { scale: 0, autoAlpha: 0.35 },
+        {
+          scale: 1, autoAlpha: 0, duration: 0.7, ease: "power2.out",
+          onComplete: () => dot.remove(),
+        }
+      );
+    }
+
     gsap.utils.toArray(".btn").forEach((btn) => {
-      if (btn.closest(".input-group")) return;
-      btn.addEventListener("pointerenter", () =>
-        gsap.to(btn, { y: -2, duration: 0.2, ease: "power2.out" }));
-      btn.addEventListener("pointerleave", () =>
-        gsap.to(btn, { y: 0, scale: 1, duration: 0.2, ease: "power2.out" }));
-      btn.addEventListener("pointerdown", () =>
-        gsap.to(btn, { scale: 0.97, duration: 0.1 }));
-      btn.addEventListener("pointerup", () =>
-        gsap.to(btn, { scale: 1, duration: 0.1 }));
+      const inGroup = !!btn.closest(".input-group");
+      const lifted = btn.classList.contains("w-100") ? 1.01 : 1.04;
+
+      if (!inGroup) {
+        btn.addEventListener("pointerenter", () => {
+          if (btn.disabled) return;
+          gsap.to(btn, { y: -3, scale: lifted, duration: 0.25, ease: "power2.out", overwrite: "auto" });
+        });
+        btn.addEventListener("pointerleave", () => {
+          gsap.to(btn, { y: 0, scale: 1, duration: 0.5, ease: "elastic.out(1, 0.5)", overwrite: "auto" });
+        });
+        btn.addEventListener("pointerdown", () => {
+          if (btn.disabled) return;
+          gsap.to(btn, { y: 0, scale: 0.95, duration: 0.1, ease: "power2.in", overwrite: "auto" });
+        });
+        btn.addEventListener("pointerup", () => {
+          if (btn.disabled) return;
+          if (btn.matches(":hover")) {
+            gsap.to(btn, { y: -3, scale: lifted, duration: 0.5, ease: "elastic.out(1, 0.4)", overwrite: "auto" });
+          } else {
+            gsap.to(btn, { y: 0, scale: 1, duration: 0.3, ease: "power2.out", overwrite: "auto" });
+          }
+        });
+      }
+
+      btn.addEventListener("pointerdown", (event) => ripple(btn, event));
     });
   });
 
