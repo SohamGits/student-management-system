@@ -1,22 +1,22 @@
-from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse, FileResponse, Http404
+from django.urls import reverse
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
-from django.utils.dateparse import parse_date
+from django.utils.dateparse import parse_date, parse_datetime
 
-from .forms import AssignmentEditForm
-from .models import Assignment, Classroom, UserProfile
+from .models import UserProfile, Classroom, Assignment, Submission
 
 MAX_RESET_ATTEMPTS = 5
 RESET_LOCKOUT_SECONDS = 15 * 60
 TEACHER_CLASSROOM_KEY = "TYITF2"
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 
 def home(request):
@@ -136,14 +136,27 @@ def student_dashboard(request):
         return redirect("teacher_dashboard")
 
     classroom = request.user.student_classrooms.first()
-    assignments = classroom.assignments.select_related("teacher") if classroom else []
+    assignments = []
+
+    if classroom:
+        assignments = list(
+            classroom.assignments.select_related("teacher")
+        )
+        my_submissions = {
+            submission.assignment_id: submission
+            for submission in Submission.objects.filter(
+                student=request.user,
+                assignment__in=assignments
+            )
+        }
+        for assignment in assignments:
+            assignment.my_submission = my_submissions.get(assignment.id)
 
     return render(
         request,
         "firstapp/student_dashboard.html",
-        {"classroom": classroom, "assignments": assignments},
+        {"classroom": classroom, "assignments": assignments}
     )
-
 
 @login_required
 def teacher_dashboard(request):
@@ -152,15 +165,12 @@ def teacher_dashboard(request):
 
     classroom = request.user.teaching_classrooms.first()
 
-    if request.method == "POST":
-        if classroom is None:
-            messages.error(request, "You must be assigned to a classroom before adding students.")
-            return redirect("teacher_dashboard")
-
+    if request.method == "POST" and classroom:
         email = request.POST.get("student_email", "").strip()
+
         student_profile = UserProfile.objects.filter(
             user__email__iexact=email,
-            role="student",
+            role="student"
         ).select_related("user").first()
 
         if student_profile is None:
@@ -171,19 +181,39 @@ def teacher_dashboard(request):
             classroom.students.add(student_profile.user)
             messages.success(
                 request,
-                f"{student_profile.user.username} was added to {classroom.name}.",
+                f"{student_profile.user.username} was added to {classroom.name}."
             )
 
         return redirect("teacher_dashboard")
+
+    students = []
+    assignments = []
+
+    if classroom:
+        students = list(classroom.students.all())
+        assignments = list(
+            classroom.assignments
+            .select_related("teacher")
+            .prefetch_related("submissions__student")
+        )
+        for assignment in assignments:
+            submitted_ids = {
+                submission.student_id
+                for submission in assignment.submissions.all()
+            }
+            assignment.pending_students = [
+                student for student in students
+                if student.id not in submitted_ids
+            ]
 
     return render(
         request,
         "firstapp/teacher_dashboard.html",
         {
             "classroom": classroom,
-            "students": classroom.students.all() if classroom else [],
-            "assignments": classroom.assignments.all() if classroom else [],
-        },
+            "students": students,
+            "assignments": assignments,
+        }
     )
 
 
@@ -306,3 +336,73 @@ def forgot_password(request):
 
     messages.success(request, "Password reset successful. Please log in.")
     return JsonResponse({"ok": True, "redirect": reverse("login")})
+
+
+@login_required
+def submit_assignment(request, assignment_id):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "Invalid request."}, status=405)
+
+    if request.user.profile.role != "student":
+        return JsonResponse(
+            {"ok": False, "error": "Only students can submit."}, status=403
+        )
+
+    assignment = get_object_or_404(
+        Assignment,
+        pk=assignment_id,
+        classroom__students=request.user
+    )
+
+    upload = request.FILES.get("file")
+
+    if upload is None:
+        return JsonResponse(
+            {"ok": False, "error": "Please choose a file."}, status=400
+        )
+
+    if upload.size > MAX_UPLOAD_BYTES:
+        return JsonResponse(
+            {"ok": False, "error": "File must be 10 MB or smaller."}, status=400
+        )
+
+    submission, created = Submission.objects.get_or_create(
+        assignment=assignment,
+        student=request.user,
+        defaults={"file": upload}
+    )
+
+    if not created:
+        submission.file.delete(save=False)
+        submission.file = upload
+        submission.save()
+
+    return JsonResponse({
+        "ok": True,
+        "file_name": submission.file_name(),
+        "submitted_at": timezone.localtime(
+            submission.submitted_at
+        ).strftime("%d %b %Y, %H:%M"),
+        "late": submission.is_late(),
+        "download_url": reverse("download_submission", args=[submission.id]),
+    })
+
+
+@login_required
+def download_submission(request, submission_id):
+    submission = get_object_or_404(
+        Submission.objects.select_related("assignment"),
+        pk=submission_id
+    )
+
+    is_owner = submission.student_id == request.user.id
+    is_posting_teacher = submission.assignment.teacher_id == request.user.id
+
+    if not (is_owner or is_posting_teacher):
+        raise Http404
+
+    return FileResponse(
+        submission.file.open("rb"),
+        as_attachment=True,
+        filename=submission.file_name()
+    )

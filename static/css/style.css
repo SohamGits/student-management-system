@@ -14,3 +14,10 @@
 .password-toggle svg {
     display: block;
 }
+
+.btn.btn-submit:hover,
+.btn.btn-submit:active {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
