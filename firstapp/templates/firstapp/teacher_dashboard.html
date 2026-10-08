@@ -148,6 +148,11 @@
                                         </a>
                                     {% endif %}
 
+                                    <a href="{% url 'edit_assignment' assignment.pk %}"
+                                       class="btn btn-outline-secondary btn-sm mt-2">
+                                        Edit assignment
+                                    </a>
+
                                 </li>
                             {% endfor %}
                         </ul>

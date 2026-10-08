@@ -1,11 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .forms import AssignmentEditForm
 from .models import UserProfile, Classroom, Assignment
-
-from .models import UserProfile, Classroom
 
 TEACHER_CLASSROOM_KEY = "TYITF2"
 
@@ -206,3 +205,34 @@ def create_assignment(request):
             messages.success(request, f'Assignment "{title}" created.')
 
     return redirect("teacher_dashboard")
+
+
+@login_required
+def edit_assignment(request, assignment_id):
+    if request.user.profile.role != "teacher":
+        return redirect("student_dashboard")
+
+    assignment = get_object_or_404(
+        Assignment,
+        pk=assignment_id,
+        teacher=request.user,
+        classroom__teachers=request.user,
+    )
+
+    if request.method == "POST":
+        form = AssignmentEditForm(request.POST, instance=assignment)
+        if form.is_valid():
+            updated_assignment = form.save()
+            messages.success(
+                request,
+                f'Assignment "{updated_assignment.title}" updated.',
+            )
+            return redirect("teacher_dashboard")
+    else:
+        form = AssignmentEditForm(instance=assignment)
+
+    return render(
+        request,
+        "firstapp/edit_assignment.html",
+        {"form": form, "assignment": assignment},
+    )
