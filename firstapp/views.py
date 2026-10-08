@@ -1,9 +1,10 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import AssignmentEditForm
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from .models import UserProfile, Classroom, Assignment
 
 TEACHER_CLASSROOM_KEY = "TYITF2"
@@ -123,7 +124,6 @@ def register(request):
 
     return render(request, "firstapp/register.html")
 
-
 @login_required
 def student_dashboard(request):
     if request.user.profile.role != "student":
@@ -235,4 +235,46 @@ def edit_assignment(request, assignment_id):
         request,
         "firstapp/edit_assignment.html",
         {"form": form, "assignment": assignment},
+    )
+
+
+@login_required
+def edit_assignment(request, assignment_id):
+    if request.user.profile.role != "teacher":
+        return redirect("student_dashboard")
+
+    assignment = get_object_or_404(
+        Assignment,
+        pk=assignment_id,
+        teacher=request.user
+    )
+
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
+        deadline = parse_datetime(request.POST.get("deadline", ""))
+
+        if not title or deadline is None:
+            messages.error(request, "Title and a valid deadline are required.")
+        else:
+            if timezone.is_naive(deadline):
+                deadline = timezone.make_aware(deadline)
+
+            assignment.title = title
+            assignment.description = description
+            assignment.deadline = deadline
+            assignment.save()
+
+            messages.success(request, f'Assignment "{title}" updated.')
+            return redirect("teacher_dashboard")
+
+    return render(
+        request,
+        "firstapp/edit_assignment.html",
+        {
+            "assignment": assignment,
+            "deadline_value": timezone.localtime(
+                assignment.deadline
+            ).strftime("%Y-%m-%dT%H:%M"),
+        }
     )

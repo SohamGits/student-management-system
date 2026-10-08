@@ -1,40 +1,38 @@
 {% extends 'firstapp/base.html' %}
-
 {% block title %}Edit Assignment{% endblock %}
-
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-8 col-xl-7">
             <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="h3 fw-bold mb-3">Edit assignment</h1>
-
+                <div class="card-body p-4">
+                    <h1 class="h4 fw-bold mb-4">Edit assignment</h1>
                     <form method="post">
                         {% csrf_token %}
 
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label for="{{ field.id_for_label }}" class="form-label">
-                                    {{ field.label }}
-                                </label>
-                                {{ field }}
-                                {% for error in field.errors %}
-                                    <div class="text-danger small">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title"
+                                   name="title" value="{{ assignment.title }}" required>
+                        </div>
 
-                        {% for error in form.non_field_errors %}
-                            <div class="alert alert-danger">{{ error }}</div>
-                        {% endfor %}
-
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description"
+                                      name="description" rows="4">{{ assignment.description }}</textarea>
+                        </div>
+                        <div class="mb-4">
+                            <label for="deadline" class="form-label">Deadline</label>
+                            <input type="datetime-local" class="form-control"
+                                   id="deadline" name="deadline"
+                                   value="{{ deadline_value }}" required>
+                        </div>
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-dark flex-fill">
                                 Save changes
                             </button>
                             <a href="{% url 'teacher_dashboard' %}"
-                               class="btn btn-outline-secondary">
+                               class="btn btn-outline-secondary flex-fill">
                                 Cancel
                             </a>
                         </div>
