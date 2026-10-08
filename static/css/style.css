@@ -10,3 +10,7 @@
 .assignment-description {
     white-space: pre-line;
 }
+
+.password-toggle svg {
+    display: block;
+}
