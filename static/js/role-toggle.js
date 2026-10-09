@@ -1,45 +1,64 @@
+
 (function () {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const COLORS = { student: "#0d6efd", teacher: "#212529" };
+    function initRoleToggles() {
+        const reduceMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
 
-  document.querySelectorAll(".role-toggle").forEach((toggle) => {
-    const thumb = toggle.querySelector(".role-toggle-thumb");
-    const inputs = toggle.querySelectorAll(".role-toggle-input");
+        document.querySelectorAll(".role-toggle").forEach((toggle) => {
+            const thumb = toggle.querySelector(".role-toggle-thumb");
+            const inputs = toggle.querySelectorAll(
+                ".role-toggle-input"
+            );
 
-    // Move the pill to the given role (animate=false snaps instantly)
-    const moveThumb = (role, animate) => {
-      const x = role === "teacher" ? 100 : 0;
-      if (!window.gsap) {            // fallback if GSAP failed to load
-        thumb.style.transform = `translateX(${x}%)`;
-        thumb.style.backgroundColor = COLORS[role];
-        return;
-      }
-      gsap.to(thumb, {
-        xPercent: x,
-        backgroundColor: COLORS[role],
-        duration: animate && !reduce ? 0.45 : 0,
-        ease: "back.out(1.5)",
-        overwrite: true,
-      });
-    };
+            if (!thumb || !inputs.length) return;
 
-    const sync = () => {
-      const checked = toggle.querySelector(".role-toggle-input:checked");
-      moveThumb(checked ? checked.value : "student", false);
-    };
+            function moveThumb(role, animate = true) {
+                const teacherSelected = role === "teacher";
+                const xPercent = teacherSelected ? 100 : 0;
+                const color = teacherSelected ? "#212529" : "#0d6efd";
 
-    inputs.forEach((input) => {
-      input.addEventListener("change", () => {
-        moveThumb(input.value, true);
-        const label = toggle.querySelector(`label[for="${input.id}"]`);
-        if (window.gsap && label && !reduce) {
-          gsap.fromTo(label, { scale: 0.92 },
-            { scale: 1, duration: 0.4, ease: "back.out(3)" });
-        }
-      });
-    });
+                if (window.gsap) {
+                    gsap.to(thumb, {
+                        xPercent,
+                        backgroundColor: color,
+                        duration: animate && !reduceMotion ? 0.4 : 0,
+                        ease: "power3.out",
+                        overwrite: true
+                    });
+                } else {
+                    thumb.style.transform =
+                        `translateX(${xPercent}%)`;
+                    thumb.style.backgroundColor = color;
+                }
+            }
 
-    sync();                                   // initial position
-    window.addEventListener("pageshow", sync); // browser back/forward restores form state
-  });
+            function sync() {
+                const selected = toggle.querySelector(
+                    ".role-toggle-input:checked"
+                );
+
+                moveThumb(selected ? selected.value : "student", false);
+            }
+
+            inputs.forEach((input) => {
+                input.addEventListener("change", () => {
+                    moveThumb(input.value, true);
+                });
+            });
+
+            sync();
+
+            window.addEventListener("pageshow", sync);
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener(
+            "DOMContentLoaded",
+            initRoleToggles
+        );
+    } else {
+        initRoleToggles();
+    }
 })();

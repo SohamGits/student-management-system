@@ -86,13 +86,20 @@ html.gsap-pending h1 + p {
 .role-toggle {
     position: relative;
     display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: 48px;
     padding: 4px;
+    isolation: isolate;
+    overflow: hidden;
     background: #e9ecef;
+    border: 1px solid #dee2e6;
     border-radius: 50rem;
 }
 
 .role-toggle-thumb {
     position: absolute;
+    z-index: 0;
     top: 4px;
     bottom: 4px;
     left: 4px;
@@ -100,25 +107,37 @@ html.gsap-pending h1 + p {
     background: #0d6efd;
     border-radius: 50rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    will-change: transform, background-color;
 }
 
 .role-toggle-input {
     position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
     opacity: 0;
-    pointer-events: none;
+    overflow: hidden;
+    clip-path: inset(50%);
 }
 
 .role-toggle-option {
     position: relative;
     z-index: 1;
-    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 50%;
+    min-width: 0;
     margin: 0;
-    padding: 0.5rem 0;
+    padding: 0.65rem 0.5rem;
     text-align: center;
     font-weight: 600;
+    line-height: 1.2;
     color: #495057;
     cursor: pointer;
     user-select: none;
+    transition: color 0.2s ease;
 }
 
 .role-toggle-input:checked + .role-toggle-option {
@@ -127,6 +146,20 @@ html.gsap-pending h1 + p {
 
 .role-toggle-input:focus-visible + .role-toggle-option {
     outline: 2px solid #0d6efd;
-    outline-offset: 2px;
+    outline-offset: -3px;
     border-radius: 50rem;
+}
+
+.role-toggle-option:hover {
+    color: #212529;
+}
+
+.role-toggle-input:checked + .role-toggle-option:hover {
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .role-toggle-option {
+        transition: none;
+    }
 }

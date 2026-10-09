@@ -29,6 +29,15 @@ class LoginViewTests(TestCase):
             role="teacher",
         )
 
+    def test_auth_pages_load_role_toggle_assets(self):
+        for page in ("login", "register"):
+            with self.subTest(page=page):
+                response = self.client.get(reverse(page))
+
+                self.assertContains(response, 'href="/static/css/style.css"')
+                self.assertContains(response, 'src="/static/js/role-toggle.js"')
+                self.assertContains(response, 'class="role-toggle"')
+
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
             reverse("login"),
@@ -193,6 +202,15 @@ class TeacherDashboardSubmissionTests(TestCase):
         )
         self.client.force_login(self.teacher)
         self.dashboard_url = reverse("teacher_dashboard")
+
+    def test_enrolled_students_are_available_in_dropdown(self):
+        response = self.client.get(self.dashboard_url)
+
+        self.assertContains(response, 'data-dropdown-toggle')
+        self.assertContains(response, 'aria-controls="enrolled-students-list"')
+        self.assertContains(response, 'id="enrolled-students-list"')
+        self.assertContains(response, 'src="/static/js/dropdown.js"')
+        self.assertContains(response, self.student.username)
 
     def test_empty_assignment_shows_no_submissions_message(self):
         response = self.client.get(self.dashboard_url)

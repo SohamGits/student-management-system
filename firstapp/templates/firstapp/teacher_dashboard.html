@@ -39,28 +39,44 @@
                     </div>
                 </div>
 
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h2 class="h5 fw-bold mb-0">Enrolled students</h2>
-                        <span class="badge text-bg-secondary">{{ students|length }}</span>
+                <div class="card shadow-sm" data-dropdown>
+                    <div class="card-header bg-white">
+                        <button type="button"
+                                class="dd-toggle btn btn-link text-decoration-none text-dark p-0 w-100 d-flex justify-content-between align-items-center"
+                                data-dropdown-toggle
+                                aria-expanded="false"
+                                aria-controls="enrolled-students-list">
+                            <span class="h5 fw-bold mb-0">Enrolled students</span>
+                            <span class="d-flex align-items-center gap-2">
+                                <span class="badge text-bg-secondary">{{ students|length }}</span>
+                                <svg class="dd-chevron" xmlns="http://www.w3.org/2000/svg"
+                                     width="16" height="16" viewBox="0 0 16 16"
+                                     fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                          d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </span>
+                        </button>
                     </div>
 
-                    {% if students %}
-                        <ul class="list-group list-group-flush">
-                            {% for student in students %}
-                                <li class="list-group-item">
-                                    <div class="fw-semibold">{{ student.username }}</div>
-                                    <div class="text-muted small text-break">
-                                        {{ student.email }}
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="card-body text-muted">
-                            No students added yet.
-                        </div>
-                    {% endif %}
+                    <div class="dd-body" id="enrolled-students-list" data-dropdown-body>
+                        {% if students %}
+                            <ul class="list-group list-group-flush">
+                                {% for student in students %}
+                                    <li class="list-group-item">
+                                        <div class="fw-semibold">{{ student.username }}</div>
+                                        <div class="text-muted small text-break">
+                                            {{ student.email }}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="card-body text-muted">
+                                No students added yet.
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
 
             </div>
@@ -247,6 +263,7 @@
 </div>
 {% endblock %}
 {% block scripts %}
+<script src="{% static 'js/dropdown.js' %}"></script>
 <script src="{% static 'js/deadlines.js' %}"></script>
 <script src="{% static 'js/create-assignment.js' %}"></script>
 {% endblock %}
