@@ -73,3 +73,60 @@ html.gsap-pending h1 + p {
     flex-shrink: 0;
     transform-origin: 50% 50%;
 }
+
+/* ---- Collapsible "Create assignment" panel (animated by create-assignment.js) ---- */
+.create-panel {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* ---- Role toggle (Student / Teacher) ---- */
+.role-toggle {
+    position: relative;
+    display: flex;
+    padding: 4px;
+    background: #e9ecef;
+    border-radius: 50rem;
+}
+
+.role-toggle-thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+    background: #0d6efd;
+    border-radius: 50rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.role-toggle-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.role-toggle-option {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    margin: 0;
+    padding: 0.5rem 0;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    user-select: none;
+}
+
+.role-toggle-input:checked + .role-toggle-option {
+    color: #fff;
+}
+
+.role-toggle-input:focus-visible + .role-toggle-option {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+    border-radius: 50rem;
+}

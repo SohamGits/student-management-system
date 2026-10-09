@@ -116,24 +116,7 @@
 
                         <div class="col-12">
                             <div class="fw-semibold mb-2">Select your role:</div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="role"
-                                       id="role-student" value="student"
-                                       onchange="toggleTeacherKey()" required>
-                                <label class="form-check-label" for="role-student">
-                                    Student
-                                </label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="role"
-                                       id="role-teacher" value="teacher"
-                                       onchange="toggleTeacherKey()">
-                                <label class="form-check-label" for="role-teacher">
-                                    Teacher
-                                </label>
-                            </div>
+                            {% include 'firstapp/_role_toggle.html' %}
                         </div>
 
                         <div class="col-12 d-none" id="teacher-key-container">
@@ -174,22 +157,61 @@
 
 {% block scripts %}
 <script src="{% static 'js/password-toggle.js' %}"></script>
+<script src="{% static 'js/role-toggle.js' %}"></script>
 <script>
-    function toggleTeacherKey() {
-        const teacherRole = document.querySelector(
-            'input[name="role"][value="teacher"]'
-        );
+    (function () {
         const container = document.getElementById("teacher-key-container");
         const keyInput = document.getElementById("teacher_key");
+        const roles = document.querySelectorAll('input[name="role"]');
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        if (teacherRole.checked) {
-            container.classList.remove("d-none");
+        function showKey(animate) {
             keyInput.required = true;
-        } else {
-            container.classList.add("d-none");
+            if (!container.classList.contains("d-none") && !animate) return;
+            container.classList.remove("d-none");
+            if (!window.gsap || !animate || reduce) return;
+
+            gsap.killTweensOf(container);
+            const marginTop = getComputedStyle(container).marginTop; // Bootstrap row gutter
+            container.style.overflow = "hidden";
+            gsap.fromTo(container,
+                { height: 0, marginTop: 0, autoAlpha: 0 },
+                {
+                    height: "auto", marginTop: marginTop, autoAlpha: 1,
+                    duration: 0.4, ease: "power3.out",
+                    clearProps: "height,marginTop,overflow,opacity,visibility",
+                });
+        }
+
+        function hideKey(animate) {
             keyInput.required = false;
             keyInput.value = "";
+            if (container.classList.contains("d-none")) return;
+
+            const finish = () => {
+                container.classList.add("d-none");
+                if (window.gsap) gsap.set(container, { clearProps: "all" });
+            };
+            if (!window.gsap || !animate || reduce) { finish(); return; }
+
+            gsap.killTweensOf(container);
+            container.style.overflow = "hidden";
+            gsap.to(container, {
+                height: 0, marginTop: 0, autoAlpha: 0,
+                duration: 0.3, ease: "power2.inOut",
+                onComplete: finish,
+            });
         }
-    }
+
+        function toggleTeacherKey(animate) {
+            const teacher = document.querySelector('input[name="role"][value="teacher"]');
+            teacher.checked ? showKey(animate) : hideKey(animate);
+        }
+
+        roles.forEach((r) => r.addEventListener("change", () => toggleTeacherKey(true)));
+
+        toggleTeacherKey(false);                                     // initial state
+        window.addEventListener("pageshow", () => toggleTeacherKey(false)); // back/forward restore
+    })();
 </script>
 {% endblock %}

@@ -37,13 +37,14 @@
       }, 0.15);
     }
 
-    // 3. Cards rise in (login box, dashboard cards)
-    if (document.querySelector(".card")) {
-      tl.from(".card", {
+    // 3. Cards rise in (login box, dashboard cards), except the collapsed create form
+    const cards = gsap.utils.toArray(".card").filter((c) => !c.closest(".create-panel"));
+    if (cards.length) {
+      tl.from(cards, {
         y: 40, autoAlpha: 0, duration: 0.7, stagger: 0.12, clearProps: done,
       }, 0.3);
     }
-
+    
     // 4. Login/register/forgot-password: fields cascade in after the card
     const authItems = gsap.utils.toArray(
       ".auth-wrapper .card-body > .text-center, .auth-wrapper form > :not(input)"

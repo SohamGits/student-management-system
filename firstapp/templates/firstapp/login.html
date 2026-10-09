@@ -53,20 +53,7 @@
                     </div>
                     <div class="mb-4">
                         <div class="fw-semibold mb-2">Login as:</div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="role"
-                                   id="role-student" value="student" required>
-                            <label class="form-check-label" for="role-student">
-                                Student
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="role"
-                                   id="role-teacher" value="teacher">
-                            <label class="form-check-label" for="role-teacher">
-                                Teacher
-                            </label>
-                        </div>
+                        {% include 'firstapp/_role_toggle.html' %}
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-2">
                         Login
@@ -88,4 +75,5 @@
 
 {% block scripts %}
 <script src="{% static 'js/password-toggle.js' %}"></script>
+<script src="{% static 'js/role-toggle.js' %}"></script>
 {% endblock %}
