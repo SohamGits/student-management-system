@@ -390,11 +390,13 @@ def download_submission(request, submission_id):
     is_owner = submission.student_id == request.user.id
     is_posting_teacher = submission.assignment.teacher_id == request.user.id
 
-    if not (is_owner or is_posting_teacher):
-        raise Http404
+    try:
+        file_handle = submission.file.open("rb")
+    except FileNotFoundError:
+        raise Http404("The file is no longer available.")
 
     return FileResponse(
-        submission.file.open("rb"),
+        file_handle,
         as_attachment=True,
         filename=submission.file_name()
     )
