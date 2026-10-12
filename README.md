@@ -1,6 +1,6 @@
 <div align="center">
 
-# student-management-system
+# Student Management System
 
 <p align="center">A full-stack web application built with Python and Django that enables teachers and students to manage classrooms, assignments, and submissions through role-based dashboards.
 
