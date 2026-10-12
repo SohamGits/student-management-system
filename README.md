@@ -39,6 +39,7 @@ cd student-management-system
 Create and activate a virtual environment:
 python -m venv venv
 
+Activate Virtual environment:
 # Windows
 venv\Scripts\activate
 
