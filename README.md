@@ -90,4 +90,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-<div align="center">Made with ❤️ by SohamGits</div>
+<div align="center">Made by SohamGits</div>
