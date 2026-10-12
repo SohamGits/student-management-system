@@ -70,7 +70,7 @@ python manage.py runserver
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Any contributions you make are **greatly appreciated**.
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
