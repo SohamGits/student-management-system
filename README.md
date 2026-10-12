@@ -1,144 +1,42 @@
-# 🎓 Student Management System
+<div align="center">
 
-A full-stack web application built with **Python** and **Django** that enables teachers and students to manage classrooms, assignments, and submissions through role-based dashboards.
+# student-management-system
 
-Teachers can create classrooms, enroll students, publish assignments (with optional file attachments), and review submissions. Students can view their classroom, access assignments, and submit work securely.
+<p align="center">A full-stack web application built with Python and Django that enables teachers and students to manage classrooms, assignments, and submissions through role-based dashboards.
 
----
+Teachers can create classrooms, enroll students, publish assignments (with optional file attachments), and review submissions. Students can view their classroom, access assignments, and submit work securely.</p>
 
-## ✨ Features
+[![Stars](https://img.shields.io/github/stars/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/stargazers) [![Forks](https://img.shields.io/github/forks/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/network) [![Issues](https://img.shields.io/github/issues/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/issues) [![Watchers](https://img.shields.io/github/watchers/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/watchers) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-### Authentication & Roles
-- Student and Teacher registration with role selection
-- Email-based login with role verification
-- Secure password hashing via Django’s authentication system
-- Classroom-key validation for teachers
-- Duplicate username/email checks and password confirmation
-- Protected routes and automatic redirect for unauthenticated users
+![HTML](https://img.shields.io/badge/-HTML-555?style=flat-square&logo=html) ![Python](https://img.shields.io/badge/-Python-555?style=flat-square&logo=python) ![JavaScript](https://img.shields.io/badge/-JavaScript-555?style=flat-square&logo=javascript) ![CSS](https://img.shields.io/badge/-CSS-555?style=flat-square&logo=css) ![Shell](https://img.shields.io/badge/-Shell-555?style=flat-square&logo=shell)
 
-### Classroom Management
-- Unique classroom keys shared across multiple teachers
-- Teachers can add registered students to a classroom
-- Students remain unenrolled until added by a teacher
-- Many-to-many relationships for flexible membership
+[🌐 View Demo](https://student-management-system-qiku.onrender.com/) · [🐛 Report Bug](https://github.com/SohamGits/student-management-system/issues) · [✨ Request Feature](https://github.com/SohamGits/student-management-system/issues)
 
-### Teacher Dashboard
-- View classroom and enrolled students
-- Add students by email
-- Create assignments with title, description, deadline, and optional attachment
-- View and track student submissions
-
-### Student Dashboard
-- View enrolled classroom and assignment list
-- See deadlines and assignment details
-- Upload submissions (stored privately)
-- Track submission status (including late submissions)
-
-### Additional Capabilities
-- File uploads for assignment attachments and student submissions
-- Responsive Bootstrap-based UI with custom styling
-- Django Admin integration for development/admin tasks
-- Late submission detection and overdue assignment indicators
+</div>
 
 ---
 
-## 🛠️ Tech Stack
+## 📋 Table of Contents
 
-| Layer       | Technologies                          |
-|-------------|---------------------------------------|
-| Backend     | Python, Django 4.2, Django ORM        |
-| Frontend    | HTML5, CSS3, Bootstrap, JavaScript, jQuery |
-| Database    | SQLite (development)                  |
-| Auth        | Django Authentication & Sessions      |
-| Storage     | Local media + private file storage    |
+- [🌐 Demo](#demo)
+- [🚀 Installation](#installation)
+- [💻 Usage](#usage)
+- [✨ Features](#features)
+- [🤝 Contributing](#contributing)
+- [📄 License](#license)
+- [👤 Contact](#contact)
 
----
+## 🌐 Demo
 
-## 🏗️ Architecture
+[https://student-management-system-qiku.onrender.com/](https://student-management-system-qiku.onrender.com/)
 
-The project follows Django’s **Model-View-Template (MVT)** pattern:
+## 🚀 Installation
 
-```
-Browser → URLs → Views → Models (ORM) → SQLite
-                ↘ Templates (HTML/CSS/JS)
-```
-
----
-
-## 🗄️ Data Models
-
-```
-User (Django built-in)
- └── UserProfile (OneToOne)
-       ├── date_of_birth
-       └── role (student | teacher)
-
-Classroom
- ├── name
- ├── key (unique)
- ├── teachers (M2M → User)
- └── students (M2M → User)
-
-Assignment
- ├── classroom (FK)
- ├── teacher (FK)
- ├── title, description, deadline
- ├── attachment (optional FileField)
- └── created_at
-
-Submission
- ├── assignment (FK)
- ├── student (FK)
- ├── file (private FileField)
- ├── submitted_at
- └── Unique constraint: one submission per student per assignment
-```
-
----
-
-## 📁 Project Structure
-
-```
-student-management-system/
-├── firstapp/                 # Main application
-│   ├── migrations/
-│   ├── templates/firstapp/
-│   ├── forms.py
-│   ├── models.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── admin.py
-│   └── tests.py
-├── mycore/                   # Project settings
-│   ├── settings.py
-│   ├── urls.py
-│   ├── asgi.py
-│   └── wsgi.py
-├── static/                   # Global static files
-├── media/                    # Public assignment attachments
-├── private_media/            # Private student submissions
-├── manage.py
-├── db.sqlite3
-└── README.md
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Python 3.8+
-- Git
-- pip
-
-### 1. Clone the repository
 ```bash
 git clone https://github.com/SohamGits/student-management-system.git
 cd student-management-system
-```
 
-### 2. Create and activate a virtual environment
-```bash
+Create and activate a virtual environment:
 python -m venv venv
 
 # Windows
@@ -146,80 +44,50 @@ venv\Scripts\activate
 
 # macOS / Linux
 source venv/bin/activate
-```
 
-### 3. Install dependencies
-```bash
+Install Dependencies:
 pip install django
-```
 
-### 4. Apply migrations
-```bash
+Apply migrations:
 python manage.py migrate
-```
 
-### 5. (Optional) Create a superuser for Django Admin
-```bash
+(Optional) Create a superuser for Django Admin:
 python manage.py createsuperuser
 ```
 
-### 6. Run the development server
+## 💻 Usage
+
 ```bash
 python manage.py runserver
 ```
 
-Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
+## ✨ Features
 
----
+- ✅ Email-based login with role verification
+- ✅ Secure password hashing via Django’s authentication system
+- ✅ Duplicate username/email checks and password confirmation
+- ✅ Protected routes and automatic redirect for unauthenticated users
 
-## 🧪 Testing
+## 🤝 Contributing
 
-Unit tests are available in `firstapp/tests.py`. Run them with:
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-```bash
-python manage.py test firstapp
-```
-
-Key areas covered:
-- Registration & login (including role and classroom-key validation)
-- Classroom membership
-- Assignment creation and submission constraints
-- Access control for protected views
-
----
-
-## 🔒 Security Notes
-
-- Passwords are hashed using Django’s built-in password hashers
-- CSRF protection is enabled on all forms
-- Login-required views and role checks protect dashboards
-- Student submission files are stored in a private directory outside public media
-- Classroom keys are simple for development purposes and should be strengthened for production use
-
-> **Important:** Do not commit `venv/`, `db.sqlite3`, or the real `SECRET_KEY` in production. Rotate the secret key and use environment variables before deploying.
-
----
-
-## 📈 Future Improvements
-
-- Email notifications & password reset
-- Assignment grading and feedback
-- Attendance tracking
-- Multiple classroom support per student
-- PostgreSQL / production database
-- Deployment (e.g. Render, Railway, or Heroku)
-- REST API endpoints
-- Automated CI tests
-
----
-
-## 👨‍💻 Author
-
-**Soham Shinde**  
-GitHub: [SohamGits](https://github.com/SohamGits)
-
----
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is open source. Feel free to use, modify, and distribute it for learning purposes.
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👤 Contact
+
+**SohamGits**
+- GitHub: [@SohamGits](https://github.com/SohamGits)
+- Project: [https://github.com/SohamGits/student-management-system](https://github.com/SohamGits/student-management-system)
+
+---
+
+<div align="center">Made with ❤️ by SohamGits</div>
