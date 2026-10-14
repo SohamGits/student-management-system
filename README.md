@@ -1,4 +1,16 @@
-# 🎓 Student Management System
+<div align="center">
+
+# Student Management System
+
+<p align="center">A full-stack web application built with Python and Django that enables teachers and students to manage classrooms, assignments, and submissions through role-based dashboards.
+
+Teachers can create classrooms, enroll students, publish assignments (with optional file attachments), and review submissions. Students can view their classroom, access assignments, and submit work securely.</p>
+
+[![Stars](https://img.shields.io/github/stars/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/stargazers) [![Forks](https://img.shields.io/github/forks/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/network) [![Issues](https://img.shields.io/github/issues/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/issues) [![Watchers](https://img.shields.io/github/watchers/SohamGits/student-management-system?style=flat-square)](https://github.com/SohamGits/student-management-system/watchers) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+![HTML](https://img.shields.io/badge/-HTML-555?style=flat-square&logo=html) ![Python](https://img.shields.io/badge/-Python-555?style=flat-square&logo=python) ![JavaScript](https://img.shields.io/badge/-JavaScript-555?style=flat-square&logo=javascript) ![CSS](https://img.shields.io/badge/-CSS-555?style=flat-square&logo=css) ![Shell](https://img.shields.io/badge/-Shell-555?style=flat-square&logo=shell)
+
+</div>
 
 A beginner-friendly, full-stack **Student Management System** built with **Python and Django**, designed to demonstrate practical web development skills including authentication, database relationships, CRUD operations, role-based access, frontend interaction, and Django's MVT architecture.
 
