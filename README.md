@@ -12,10 +12,6 @@ Teachers can create classrooms, enroll students, publish assignments (with optio
 
 </div>
 
-A beginner-friendly, full-stack **Student Management System** built with **Python and Django**, designed to demonstrate practical web development skills including authentication, database relationships, CRUD operations, role-based access, frontend interaction, and Django's MVT architecture.
-
-The system provides separate experiences for **Teachers** and **Students**, allowing teachers to manage their classroom, add students, create assignments, and track submissions, while students can access their classroom, view assignments, and submit their work.
-
 ---
 
 ## 🚀 Features
