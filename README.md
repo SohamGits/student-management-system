@@ -22,6 +22,7 @@ Teachers can create classrooms, enroll students, publish assignments (with optio
 - [🚀 Installation](#installation)
 - [💻 Usage](#usage)
 - [✨ Features](#features)
+- [🔒Security](#security)
 - [🤝 Contributing](#contributing)
 - [📄 License](#license)
 - [👤 Contact](#contact)
@@ -70,7 +71,7 @@ python manage.py runserver
 - ✅ Protected routes and automatic redirect for unauthenticated users
 
 
-## 🔒 Security Considerations
+## 🔒 Security
 The project uses Django's built-in security and authentication mechanisms wherever appropriate.
 
 These include:
