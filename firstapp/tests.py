@@ -37,6 +37,19 @@ class LoginViewTests(TestCase):
                 self.assertContains(response, 'href="/static/css/style.css"')
                 self.assertContains(response, 'src="/static/js/role-toggle.js"')
                 self.assertContains(response, 'class="role-toggle"')
+                self.assertContains(
+                    response,
+                    'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"',
+                )
+                self.assertContains(
+                    response,
+                    'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrambleTextPlugin.min.js"',
+                )
+                self.assertContains(response, 'data-scramble="')
+                self.assertContains(
+                    response,
+                    'classList.remove("gsap-pending")',
+                )
 
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
