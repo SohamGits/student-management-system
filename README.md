@@ -69,6 +69,22 @@ python manage.py runserver
 - ✅ Duplicate username/email checks and password confirmation
 - ✅ Protected routes and automatic redirect for unauthenticated users
 
+
+## 🔒 Security Considerations
+The project uses Django's built-in security and authentication mechanisms wherever appropriate.
+
+These include:
+
+- Django password hashing
+- Django authentication sessions
+- CSRF protection
+- Login-protected views
+- Server-side validation
+- Role verification
+- Database-level relationships
+- Django ORM instead of manually constructed SQL queries
+
+
 ## 🤝 Contributing
 
 Any contributions you make are **greatly appreciated**.
