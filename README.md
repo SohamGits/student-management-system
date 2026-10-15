@@ -105,6 +105,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 **SohamGits**
 - GitHub: [@SohamGits](https://github.com/SohamGits)
 - Project: [https://github.com/SohamGits/student-management-system](https://github.com/SohamGits/student-management-system)
+- LinkedIn: (https://www.linkedin.com/in/soham-shinde-865648388/)
 
 ---
 
