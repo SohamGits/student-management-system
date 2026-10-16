@@ -41,15 +41,17 @@ class LoginViewTests(TestCase):
                     response,
                     'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"',
                 )
-                self.assertContains(
+                self.assertNotContains(
                     response,
                     'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrambleTextPlugin.min.js"',
                 )
-                self.assertContains(response, 'data-scramble="')
+                self.assertNotContains(response, "data-scramble")
                 self.assertContains(
                     response,
                     'classList.remove("gsap-pending")',
                 )
+                self.assertContains(response, 'document.querySelector(".auth-wrapper .card")')
+                self.assertContains(response, "gsap.fromTo(")
 
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(

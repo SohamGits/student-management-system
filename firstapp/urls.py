@@ -17,4 +17,9 @@ urlpatterns = [
     path("forgot-password/", views.forgot_password, name="forgot_password"),
     path("student/assignments/<int:assignment_id>/submit/", views.submit_assignment, name="submit_assignment"),
     path("submissions/<int:submission_id>/download/", views.download_submission, name="download_submission"),
+        path(
+        "teacher/assignments/<int:assignment_id>/delete/",
+        views.delete_assignment,
+        name="delete_assignment",
+    ),
 ]

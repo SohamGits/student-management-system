@@ -163,6 +163,3 @@ html.gsap-pending h1 + p {
         transition: none;
     }
 }
-
-[data-scramble] { opacity: 0; }
-@media (prefers-reduced-motion: reduce) { [data-scramble] { opacity: 1; } }

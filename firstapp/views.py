@@ -10,6 +10,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
+from django.views.decorators.http import require_POST
+from django.db import transaction
 
 from .forms import AssignmentEditForm
 from .models import UserProfile, Classroom, Assignment, Submission
@@ -280,6 +282,35 @@ def edit_assignment(request, assignment_id):
         "firstapp/edit_assignment.html",
         {"form": form, "assignment": assignment, "deadline_value": deadline_value},
     )
+
+@login_required
+@require_POST
+def delete_assignment(request, assignment_id):
+    if request.user.profile.role != "teacher":
+        return redirect("student_dashboard")
+
+    # Only the teacher who created the assignment can delete it.
+    assignment = get_object_or_404(
+        Assignment,
+        pk=assignment_id,
+        teacher=request.user,
+        classroom__teachers=request.user,
+    )
+
+    title = assignment.title
+    stored_files = [s.file for s in assignment.submissions.all() if s.file]
+    if assignment.attachment:
+        stored_files.append(assignment.attachment)
+
+    with transaction.atomic():
+        assignment.delete()  # submissions are removed by the cascade
+
+    # Remove the uploaded files from disk once the rows are gone.
+    for stored_file in stored_files:
+        stored_file.delete(save=False)
+
+    messages.success(request, f'Assignment "{title}" deleted.')
+    return redirect("teacher_dashboard")
 
 
 def forgot_password(request):
