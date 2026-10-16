@@ -228,18 +228,35 @@
                                             {% endif %}
                                         </div>
                                         {% if assignment.teacher == user %}
-                                            <a href="{% url 'edit_assignment' assignment.id %}"
-                                               class="btn btn-dark btn-sm"
-                                               title="Edit assignment"
-                                               aria-label="Edit assignment">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                     width="16" height="16" viewBox="0 0 24 24"
-                                                     fill="none" stroke="currentColor"
-                                                     stroke-width="2" stroke-linecap="round"
-                                                     stroke-linejoin="round" aria-hidden="true">
-                                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                                                </svg>
-                                            </a>
+                                            <div class="d-flex gap-2">
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm"
+                                                        title="Delete assignment"
+                                                        aria-label="Delete assignment"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#delete-assignment-modal"
+                                                        data-delete-url="{% url 'delete_assignment' assignment.id %}"
+                                                        data-assignment-title="{{ assignment.title }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="16" height="16" viewBox="0 0 16 16"
+                                                         fill="currentColor" aria-hidden="true">
+                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                                    </svg>
+                                                </button>
+                                                <a href="{% url 'edit_assignment' assignment.id %}"
+                                                   class="btn btn-dark btn-sm"
+                                                   title="Edit assignment"
+                                                   aria-label="Edit assignment">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="16" height="16" viewBox="0 0 24 24"
+                                                         fill="none" stroke="currentColor"
+                                                         stroke-width="2" stroke-linecap="round"
+                                                         stroke-linejoin="round" aria-hidden="true">
+                                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
                                         {% endif %}
                                     </div>
                                 </li>
@@ -250,6 +267,40 @@
                             No assignments yet.
                         </div>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete confirmation (shared by every assignment's delete button) -->
+        <div class="modal fade" id="delete-assignment-modal" tabindex="-1"
+             aria-labelledby="delete-assignment-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post" action="">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h2 class="modal-title h5 fw-bold" id="delete-assignment-label">
+                                Delete assignment?
+                            </h2>
+                            <button type="button" class="btn-close"
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-1">
+                                You are about to delete
+                                <strong id="delete-assignment-title"></strong>.
+                            </p>
+                            <p class="text-muted small mb-0">
+                                Student submissions for it will be deleted too.
+                                This cannot be undone.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -266,4 +317,5 @@
 <script src="{% static 'js/dropdown.js' %}"></script>
 <script src="{% static 'js/deadlines.js' %}"></script>
 <script src="{% static 'js/create-assignment.js' %}"></script>
+<script src="{% static 'js/delete-assignment.js' %}"></script>
 {% endblock %}

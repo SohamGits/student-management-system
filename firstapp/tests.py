@@ -37,6 +37,21 @@ class LoginViewTests(TestCase):
                 self.assertContains(response, 'href="/static/css/style.css"')
                 self.assertContains(response, 'src="/static/js/role-toggle.js"')
                 self.assertContains(response, 'class="role-toggle"')
+                self.assertContains(
+                    response,
+                    'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"',
+                )
+                self.assertNotContains(
+                    response,
+                    'src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrambleTextPlugin.min.js"',
+                )
+                self.assertNotContains(response, "data-scramble")
+                self.assertContains(
+                    response,
+                    'classList.remove("gsap-pending")',
+                )
+                self.assertContains(response, 'document.querySelector(".auth-wrapper .card")')
+                self.assertContains(response, "gsap.fromTo(")
 
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
@@ -215,7 +230,7 @@ class TeacherDashboardSubmissionTests(TestCase):
     def test_empty_assignment_shows_no_submissions_message(self):
         response = self.client.get(self.dashboard_url)
 
-        self.assertContains(response, "No Submissions yet")
+        self.assertContains(response, "No submissions yet.")
 
     def test_assignment_with_submission_shows_submitter_without_empty_message(self):
         Submission.objects.create(
@@ -227,5 +242,5 @@ class TeacherDashboardSubmissionTests(TestCase):
         response = self.client.get(self.dashboard_url)
 
         self.assertContains(response, self.student.username)
-        self.assertNotContains(response, "No Submissions yet")
+        self.assertNotContains(response, "No submissions yet.")
         self.assertNotContains(response, "Not submitted:")
