@@ -1,4 +1,9 @@
+import tempfile
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
@@ -254,3 +259,101 @@ class TeacherDashboardSubmissionTests(TestCase):
         self.assertContains(response, self.student.username)
         self.assertNotContains(response, "No submissions yet.")
         self.assertNotContains(response, "Not submitted:")
+
+
+class StudentDashboardSubmissionTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            username="submitting-student",
+            email="submitting-student@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.student,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.classroom = Classroom.objects.create(
+            name="Submission classroom",
+            key="SUBMISSION-CLASSROOM",
+        )
+        self.classroom.students.add(self.student)
+        self.assignment = Assignment.objects.create(
+            classroom=self.classroom,
+            teacher=User.objects.create_user(
+                username="submission-teacher",
+                email="submission-teacher@example.com",
+            ),
+            title="Submit this assignment",
+            deadline="2030-01-01T12:00:00Z",
+        )
+        self.client.force_login(self.student)
+
+    def test_dashboard_loads_jquery_and_submission_script(self):
+        response = self.client.get(reverse("student_dashboard"))
+
+        self.assertContains(
+            response,
+            "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+        )
+        self.assertContains(response, 'src="/static/js/submission.js"')
+        self.assertContains(response, "Make submission")
+
+    def test_student_can_submit_assignment_file(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        storage_patch = patch.object(
+            Submission._meta.get_field("file"),
+            "storage",
+            FileSystemStorage(location=temp_dir.name),
+        )
+        storage_patch.start()
+        self.addCleanup(storage_patch.stop)
+
+        response = self.client.post(
+            reverse("submit_assignment", args=[self.assignment.pk]),
+            {
+                "file": SimpleUploadedFile(
+                    "homework.txt",
+                    b"Assignment response",
+                    content_type="text/plain",
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["file_name"], "homework.txt")
+        self.assertTrue(
+            Submission.objects.filter(
+                assignment=self.assignment,
+                student=self.student,
+            ).exists()
+        )
+
+
+class ForgotPasswordViewTests(TestCase):
+    def test_page_loads_jquery_and_error_display(self):
+        response = self.client.get(reverse("forgot_password"))
+
+        self.assertContains(
+            response,
+            "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+        )
+        self.assertContains(response, 'src="/static/js/forgot-password.js"')
+        self.assertContains(response, 'id="reset-error"')
+
+    def test_invalid_credentials_return_displayable_error(self):
+        response = self.client.post(
+            reverse("forgot_password"),
+            {
+                "email": "unknown@example.com",
+                "dob": "2005-01-01",
+                "new_password": "a-strong-new-password-123",
+                "confirm_password": "a-strong-new-password-123",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["error"],
+            "Email and date of birth do not match any account.",
+        )
