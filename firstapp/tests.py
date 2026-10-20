@@ -53,6 +53,16 @@ class LoginViewTests(TestCase):
                 self.assertContains(response, 'document.querySelector(".auth-wrapper .card")')
                 self.assertContains(response, "gsap.fromTo(")
 
+    def test_authenticated_user_does_not_see_navbar_on_login_pages(self):
+        self.client.force_login(self.teacher)
+
+        for page in ("login", "home"):
+            with self.subTest(page=page):
+                response = self.client.get(reverse(page))
+
+                self.assertNotContains(response, 'class="navbar navbar-expand navbar-app"')
+                self.assertNotContains(response, "Sign out")
+
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
             reverse("login"),
