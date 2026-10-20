@@ -1,118 +1,721 @@
-.auth-wrapper {
-    min-height: 85vh;
+
+/* =========================================================
+   SCHOLAR — STUDENT MANAGEMENT SYSTEM
+   Bootstrap 5.3 compatible visual system
+   ========================================================= */
+
+/* ---------- 1. Design tokens ---------- */
+
+:root {
+    color-scheme: light;
+
+    --brand-950: #102C27;
+    --brand-900: #183B35;
+    --brand-800: #245349;
+    --brand-700: #286B5A;
+    --brand-600: #32816B;
+    --brand-100: #DCECE5;
+    --brand-50: #EEF5F0;
+
+    --accent: #D99A36;
+    --accent-soft: #FFF3D9;
+
+    --page-bg: #F4F6F3;
+    --surface: #FFFFFF;
+    --surface-muted: #F8FAF8;
+
+    --text-primary: #202C29;
+    --text-secondary: #687772;
+    --text-muted: #87928D;
+
+    --border: #E1E7E2;
+    --border-strong: #CCD6CF;
+
+    --success: #24744F;
+    --success-soft: #E6F4EC;
+
+    --danger: #B83F42;
+    --danger-soft: #FCEBEC;
+
+    --warning: #91621C;
+    --warning-soft: #FFF3D9;
+
+    --info: #286B7A;
+    --info-soft: #E6F3F6;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+
+    --shadow-card:
+        0 2px 5px rgba(25, 45, 35, 0.025),
+        0 8px 24px rgba(25, 45, 35, 0.035);
+
+    --shadow-hover:
+        0 8px 24px rgba(25, 45, 35, 0.075);
+
+    --transition:
+        180ms ease;
+
+    --content-width: 1320px;
 }
 
-.card {
-    border: 0;
-    border-radius: 0.75rem;
+/* ---------- 2. Base / typography ---------- */
+
+* {
+    box-sizing: border-box;
 }
 
-.assignment-description {
-    white-space: pre-line;
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
 }
 
-/* ---------- Enhanced Password Toggle Styling ---------- */
-.password-toggle {
-    background-color: #fff;
-    border-color: #ced4da;
-    color: #6c757d;
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--page-bg);
+    color: var(--text-primary);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--brand-700);
+    text-underline-offset: 3px;
+    transition: color var(--transition);
+}
+
+a:hover {
+    color: var(--brand-900);
+}
+
+p {
+    color: var(--text-secondary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: 700;
+}
+
+::selection {
+    background: var(--brand-100);
+    color: var(--brand-950);
+}
+
+:focus-visible {
+    outline: 3px solid rgba(50, 129, 107, 0.4);
+    outline-offset: 3px;
+}
+
+/* ---------- 3. Main navigation ---------- */
+
+.navbar-app {
+    position: relative;
+    z-index: 100;
+    min-height: 78px;
+    padding: 0.85rem 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.app-container {
+    width: 100%;
+    max-width: var(--content-width);
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.brand-mark:hover {
+    color: var(--text-primary);
+}
+
+.brand-symbol {
+    display: grid;
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--brand-900);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 750;
+    letter-spacing: -0.06em;
+}
+
+.brand-copy,
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    color: var(--brand-950);
+    font-size: 1.12rem;
+    font-weight: 750;
+    letter-spacing: -0.04em;
+    line-height: 1.25;
+}
+
+.brand-caption {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.105em;
+    line-height: 1.3;
+}
+
+.navbar-actions {
     display: flex;
     align-items: center;
+    gap: 1.25rem;
+}
+
+.user-identity {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.user-avatar {
+    display: grid;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    place-items: center;
+    border: 1px solid #CFE2D7;
+    border-radius: 50%;
+    background: var(--brand-50);
+    color: var(--brand-800);
+    font-size: 0.9rem;
+    font-weight: 750;
+}
+
+.user-name {
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.user-role {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    line-height: 1.3;
+}
+
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    padding: 0 1rem;
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    gap: 0.5rem;
+    min-height: 39px;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition:
+        color var(--transition),
+        background var(--transition),
+        border-color var(--transition);
 }
 
-.password-toggle:hover {
-    background-color: #f8f9fa;
-    color: #0d6efd; /* Bootstrap primary blue */
-    border-color: #ced4da;
+.btn-logout:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-muted);
+    color: var(--brand-900);
+    box-shadow: none;
 }
 
+/* ---------- 4. Page layout ---------- */
+
+.app-main {
+    min-height: calc(100vh - 78px);
+    padding-bottom: 3rem;
+}
+
+.app-main > .container,
+.app-main > .container-fluid {
+    width: 100%;
+    max-width: var(--content-width);
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.app-main > .container.py-4,
+.app-main > .container-fluid.py-4 {
+    padding-top: 2.25rem !important;
+    padding-bottom: 3rem !important;
+}
+
+.page-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 1.8rem;
+}
+
+.page-heading h1,
+.app-main h1.h3,
+.app-main h1.h2 {
+    margin-bottom: 0.35rem;
+    color: var(--brand-950);
+    font-size: clamp(1.5rem, 2.5vw, 1.9rem);
+    font-weight: 750;
+    letter-spacing: -0.045em;
+    line-height: 1.3;
+}
+
+.app-main h1 + p {
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.app-main .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.app-main .small,
+.app-main small {
+    font-size: 0.82rem;
+}
+
+/* ---------- 5. Cards and panels ---------- */
+
+.card {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.card.shadow-sm {
+    box-shadow: var(--shadow-card) !important;
+}
+
+.card:hover {
+    border-color: #D5DED7;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-header {
+    min-height: 58px;
+    padding: 1rem 1.35rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface) !important;
+}
+
+.card-header h2,
+.card-header h3,
+.card-header h4,
+.card-header h5 {
+    color: var(--text-primary);
+}
+
+.card-body h2,
+.card-body h3,
+.card-body h4,
+.card-body h5 {
+    margin-bottom: 0.65rem;
+    letter-spacing: -0.025em;
+}
+
+.card-body > p:last-child {
+    margin-bottom: 0;
+}
+
+.card .card-body .border,
+.app-main .border.rounded {
+    border-color: var(--border) !important;
+    border-radius: var(--radius-md) !important;
+}
+
+.app-main .border-top {
+    border-color: var(--border) !important;
+}
+
+.row {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 1.5rem;
+}
+
+/* ---------- 6. Buttons ---------- */
+
+.btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 39px;
+    padding: 0.55rem 0.95rem;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    font-size: 0.86rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+    transition:
+        color var(--transition),
+        background-color var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.btn-sm {
+    min-height: 32px;
+    padding: 0.4rem 0.7rem;
+    border-radius: 7px;
+    font-size: 0.79rem;
+}
+
+.btn-lg {
+    min-height: 47px;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.94rem;
+}
+
+.btn-primary {
+    border-color: var(--brand-900);
+    background: var(--brand-900);
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    border-color: var(--brand-950);
+    background: var(--brand-950);
+    color: #fff;
+}
+
+.btn-primary:active {
+    border-color: var(--brand-950) !important;
+    background: var(--brand-950) !important;
+    color: #fff !important;
+}
+
+.btn-secondary {
+    border-color: #E5EAE5;
+    background: #E5EAE5;
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    border-color: #D6DFD8;
+    background: #D6DFD8;
+    color: var(--brand-950);
+}
+
+.btn-success {
+    border-color: var(--success);
+    background: var(--success);
+}
+
+.btn-success:hover {
+    border-color: #1C6040;
+    background: #1C6040;
+}
+
+.btn-danger {
+    border-color: var(--danger);
+    background: var(--danger);
+}
+
+.btn-danger:hover {
+    border-color: #9F3034;
+    background: #9F3034;
+}
+
+.btn-outline-primary {
+    border-color: #B8D3C6;
+    background: #fff;
+    color: var(--brand-800);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    border-color: var(--brand-800);
+    background: var(--brand-50);
+    color: var(--brand-950);
+}
+
+.btn-outline-secondary,
+.btn-outline-dark {
+    border-color: var(--border-strong);
+    background: #fff;
+    color: var(--text-secondary);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-dark:hover {
+    border-color: var(--brand-700);
+    background: var(--brand-50);
+    color: var(--brand-900);
+}
+
+.btn-link {
+    color: var(--brand-700);
+}
+
+.btn-link:hover {
+    color: var(--brand-950);
+}
+
+.btn:disabled,
+.btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    box-shadow: none;
+}
+
+.btn:not(:disabled):not(.disabled):hover {
+    box-shadow: 0 3px 10px rgba(24, 59, 53, 0.09);
+}
+
+.input-group .btn:hover {
+    box-shadow: none;
+}
+
+/* ---------- 7. Forms and inputs ---------- */
+
+.form-label {
+    margin-bottom: 0.45rem;
+    color: var(--text-primary);
+    font-size: 0.84rem;
+    font-weight: 650;
+}
+
+.form-control,
+.form-select {
+    min-height: 43px;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background-color: #fff;
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.form-control::placeholder {
+    color: #9AA59F;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: #AEBDB3;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--brand-600);
+    background-color: #fff;
+    color: var(--text-primary);
+    box-shadow: 0 0 0 3px rgba(50, 129, 107, 0.13);
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+input[type="file"].form-control {
+    padding: 0.45rem;
+    font-size: 0.8rem;
+}
+
+input[type="file"]::file-selector-button {
+    margin: -0.15rem 0.65rem -0.15rem -0.15rem;
+    padding: 0.45rem 0.7rem;
+    border: 0;
+    border-radius: 6px;
+    background: var(--brand-50);
+    color: var(--brand-800);
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.form-text {
+    margin-top: 0.4rem;
+    color: var(--text-muted);
+    font-size: 0.77rem;
+}
+
+.form-check-input {
+    border-color: var(--border-strong);
+}
+
+.form-check-input:checked {
+    border-color: var(--brand-800);
+    background-color: var(--brand-800);
+}
+
+.form-check-input:focus {
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px rgba(50, 129, 107, 0.13);
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    min-height: 56px;
+}
+
+.form-floating > label {
+    color: var(--text-secondary);
+}
+
+.input-group > .form-control,
+.input-group > .form-select {
+    min-width: 0;
+}
+
+.input-group > .form-control:not(:last-child),
+.input-group > .form-select:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group > .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* ---------- 8. Password visibility control ---------- */
+
+.password-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.9rem;
+    border-color: var(--border-strong);
+    background: #fff;
+    color: var(--text-secondary);
+}
+
+.password-toggle:hover,
 .password-toggle:focus {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    border-color: #86b7fe;
-    color: #0d6efd;
-    z-index: 3;
+    border-color: var(--brand-600);
+    background: var(--brand-50);
+    color: var(--brand-800);
+    box-shadow: none;
 }
 
 .password-toggle svg {
     display: block;
-    transition: transform 0.2s ease;
+    transition: transform var(--transition);
 }
 
 .password-toggle:active svg {
-    transform: scale(0.92); /* Subtle press animation */
+    transform: scale(0.94);
 }
 
-.btn.btn-submit:hover,
-.btn.btn-submit:active {
-    background-color: #198754;
-    border-color: #198754;
-    color: #fff;
+/* ---------- 9. Authentication pages ---------- */
+
+.auth-wrapper {
+    min-height: calc(100vh - 78px);
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
 }
 
-/* Hides elements until GSAP sets their starting state (see animations.js) */
-html.gsap-pending .navbar,
-html.gsap-pending .card,
-html.gsap-pending .list-group-item,
-html.gsap-pending h1,
-html.gsap-pending h1 + p {
-    visibility: hidden;
+.auth-wrapper > div {
+    min-width: 0;
 }
 
-/* ---------- GSAP buttons ---------- */
-.btn {
-    position: relative;
-    overflow: hidden;
+.auth-wrapper .card {
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    box-shadow:
+        0 12px 35px rgba(25, 45, 35, 0.055),
+        0 2px 8px rgba(25, 45, 35, 0.025);
 }
 
-.btn:not(:disabled):not(.disabled):hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+.auth-wrapper .card-body {
+    padding: clamp(1.5rem, 4vw, 2.5rem) !important;
 }
 
-.input-group .btn:not(:disabled):hover {
-    box-shadow: none;
+.auth-wrapper h1 {
+    margin-bottom: 0.55rem;
+    color: var(--brand-950);
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    font-weight: 750;
+    letter-spacing: -0.05em;
 }
 
-.btn-ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0;
-    pointer-events: none;
+.auth-wrapper .text-center > p {
+    font-size: 0.9rem;
 }
 
-/* ---------- GSAP dropdown ---------- */
-.dd-toggle {
-    cursor: pointer;
+.auth-wrapper form {
+    margin-top: 1.6rem;
 }
 
-.dd-toggle:focus-visible {
-    outline: 2px solid #0d6efd;
-    outline-offset: -2px;
+.auth-wrapper form > .mb-3,
+.auth-wrapper form > .mb-4 {
+    margin-bottom: 1.15rem !important;
 }
 
-.dd-body {
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+.auth-wrapper .btn[type="submit"] {
+    min-height: 47px;
 }
 
-.dd-chevron {
-    flex-shrink: 0;
-    transform-origin: 50% 50%;
+.auth-wrapper a:not(.btn) {
+    font-weight: 600;
+    text-decoration: none;
 }
 
-/* ---- Collapsible "Create assignment" panel (animated by create-assignment.js) ---- */
-.create-panel {
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    visibility: hidden;
+.auth-wrapper a:not(.btn):hover {
+    text-decoration: underline;
 }
 
-/* ---- Role toggle (Student / Teacher) ---- */
+/* ---------- 10. Role selector ---------- */
+
 .role-toggle {
     position: relative;
     display: flex;
@@ -122,9 +725,9 @@ html.gsap-pending h1 + p {
     padding: 4px;
     isolation: isolate;
     overflow: hidden;
-    background: #e9ecef;
-    border: 1px solid #dee2e6;
-    border-radius: 50rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #F0F3F0;
 }
 
 .role-toggle-thumb {
@@ -134,11 +737,11 @@ html.gsap-pending h1 + p {
     bottom: 4px;
     left: 4px;
     width: calc(50% - 4px);
-    background: #0d6efd;
-    border-radius: 50rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 9px;
+    background: var(--brand-900);
+    box-shadow: 0 2px 5px rgba(16, 44, 39, 0.15);
     pointer-events: none;
-    will-change: transform, background-color;
+    will-change: transform;
 }
 
 .role-toggle-input {
@@ -146,28 +749,30 @@ html.gsap-pending h1 + p {
     width: 1px;
     height: 1px;
     margin: 0;
-    opacity: 0;
     overflow: hidden;
     clip-path: inset(50%);
+    opacity: 0;
 }
 
 .role-toggle-option {
     position: relative;
     z-index: 1;
     display: flex;
+    flex: 1 1 50%;
     align-items: center;
     justify-content: center;
-    flex: 1 1 50%;
     min-width: 0;
     margin: 0;
     padding: 0.65rem 0.5rem;
-    text-align: center;
-    font-weight: 600;
+    border-radius: 9px;
+    color: var(--text-secondary);
+    font-size: 0.86rem;
+    font-weight: 650;
     line-height: 1.2;
-    color: #495057;
+    text-align: center;
     cursor: pointer;
     user-select: none;
-    transition: color 0.2s ease;
+    transition: color var(--transition);
 }
 
 .role-toggle-input:checked + .role-toggle-option {
@@ -175,21 +780,484 @@ html.gsap-pending h1 + p {
 }
 
 .role-toggle-input:focus-visible + .role-toggle-option {
-    outline: 2px solid #0d6efd;
+    outline: 2px solid var(--brand-600);
     outline-offset: -3px;
-    border-radius: 50rem;
 }
 
 .role-toggle-option:hover {
-    color: #212529;
+    color: var(--brand-900);
 }
 
 .role-toggle-input:checked + .role-toggle-option:hover {
     color: #fff;
 }
 
+/* ---------- 11. Assignment lists and content ---------- */
+
+.assignment-description {
+    margin-top: 0.55rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.list-group {
+    border-radius: 0;
+}
+
+.list-group-item {
+    padding: 1.15rem 1.35rem;
+    border-color: var(--border);
+    background: var(--surface);
+    color: var(--text-primary);
+    transition: background-color var(--transition);
+}
+
+.list-group-item:hover {
+    background: #FBFCFA;
+}
+
+.list-group-item:last-child {
+    border-bottom: 0;
+}
+
+.list-group-item .fw-semibold {
+    color: var(--text-primary);
+    font-weight: 650 !important;
+    overflow-wrap: anywhere;
+}
+
+.list-group-item .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.list-group-item .border-top {
+    padding-top: 1rem !important;
+}
+
+.list-group-item a:not(.btn) {
+    font-weight: 550;
+    overflow-wrap: anywhere;
+}
+
+.list-group-item .d-flex {
+    min-width: 0;
+}
+
+.list-group-item .d-flex > div {
+    min-width: 0;
+}
+
+.list-group-item .btn {
+    flex-shrink: 0;
+}
+
+/* ---------- 12. Dropdown and collapsible panels ---------- */
+
+.dd-toggle {
+    min-height: 30px;
+    justify-content: space-between;
+    color: var(--text-primary);
+    text-align: left;
+}
+
+.dd-toggle:hover {
+    color: var(--brand-800);
+    box-shadow: none;
+}
+
+.dd-toggle:focus-visible {
+    outline: 2px solid var(--brand-600);
+    outline-offset: 3px;
+}
+
+.dd-chevron {
+    flex-shrink: 0;
+    transform-origin: 50% 50%;
+}
+
+.dd-body {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.create-panel {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* ---------- 13. Badges and status labels ---------- */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+    padding: 0.3rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.73rem;
+    font-weight: 650;
+    letter-spacing: 0.005em;
+}
+
+.text-bg-primary {
+    background: var(--brand-100) !important;
+    color: var(--brand-900) !important;
+}
+
+.text-bg-secondary {
+    background: #EDF0ED !important;
+    color: #58655F !important;
+}
+
+.text-bg-success {
+    background: var(--success-soft) !important;
+    color: var(--success) !important;
+}
+
+.text-bg-danger {
+    background: var(--danger-soft) !important;
+    color: var(--danger) !important;
+}
+
+.text-bg-warning {
+    background: var(--warning-soft) !important;
+    color: var(--warning) !important;
+}
+
+.text-bg-info {
+    background: var(--info-soft) !important;
+    color: var(--info) !important;
+}
+
+/* ---------- 14. Alerts and notifications ---------- */
+
+.flash-container {
+    padding-top: 1rem;
+}
+
+.app-alert,
+.alert {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+}
+
+.alert-success {
+    border-color: #C8E6D2;
+    background: var(--success-soft);
+    color: #205F40;
+}
+
+.alert-danger {
+    border-color: #F0C9CB;
+    background: var(--danger-soft);
+    color: #96373A;
+}
+
+.alert-warning {
+    border-color: #F0D9A9;
+    background: var(--warning-soft);
+    color: #795317;
+}
+
+.alert-info {
+    border-color: #C7E3EA;
+    background: var(--info-soft);
+    color: #245E6B;
+}
+
+.alert .btn-close {
+    box-shadow: none;
+}
+
+/* ---------- 15. Empty states ---------- */
+
+.card-body.text-center {
+    padding: 3rem 1.5rem !important;
+}
+
+.card-body.text-center h2,
+.card-body.text-center h3 {
+    margin-bottom: 0.65rem;
+}
+
+.card-body.text-center p {
+    max-width: 480px;
+    margin-right: auto;
+    margin-left: auto;
+    line-height: 1.7;
+}
+
+/* ---------- 16. Submission area ---------- */
+
+.submission-area {
+    min-width: 0;
+}
+
+.submission-status {
+    min-width: 0;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.submission-status > div {
+    margin-top: 0.2rem;
+    font-size: 0.77rem;
+}
+
+.submission-area .d-flex > div {
+    min-width: 0;
+}
+
+.submission-input {
+    max-width: 100%;
+}
+
+.submission-error {
+    font-size: 0.81rem;
+}
+
+/* ---------- 17. Tables ---------- */
+
+.table {
+    margin-bottom: 0;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.85rem 1rem;
+    border-color: var(--border);
+}
+
+.table thead th {
+    background: var(--surface-muted);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.table tbody tr:hover > * {
+    background: #FBFCFA;
+}
+
+/* ---------- 18. Button ripple compatibility ---------- */
+
+.btn-ripple {
+    position: absolute;
+    z-index: 0;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Keep button labels above decorative ripple effects. */
+.btn > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- 19. Responsive layouts ---------- */
+
+@media (min-width: 1400px) {
+    .app-container {
+        max-width: var(--content-width);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .app-main > .container.py-4,
+    .app-main > .container-fluid.py-4 {
+        padding-top: 1.75rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+
+    .row {
+        --bs-gutter-x: 1.15rem;
+        --bs-gutter-y: 1.15rem;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+    }
+
+    .card-header {
+        padding: 0.9rem 1.15rem;
+    }
+
+    .list-group-item {
+        padding: 1rem 1.15rem;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body {
+        font-size: 0.9rem;
+    }
+
+    .navbar-app {
+        min-height: 68px;
+        padding: 0.7rem 0;
+    }
+
+    .brand-mark {
+        gap: 0.55rem;
+    }
+
+    .brand-symbol {
+        width: 37px;
+        height: 37px;
+        flex-basis: 37px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+    }
+
+    .brand-name {
+        font-size: 1rem;
+    }
+
+    .brand-caption {
+        font-size: 0.49rem;
+        letter-spacing: 0.075em;
+    }
+
+    .navbar-actions {
+        gap: 0.55rem;
+    }
+
+    .user-identity {
+        gap: 0.45rem;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        font-size: 0.8rem;
+    }
+
+    .user-name {
+        max-width: 90px;
+        overflow: hidden;
+        font-size: 0.77rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .user-role {
+        font-size: 0.68rem;
+    }
+
+    .btn-logout {
+        min-height: 35px;
+        gap: 0.25rem;
+        padding: 0.4rem 0.55rem;
+        font-size: 0.76rem;
+    }
+
+    .app-main {
+        min-height: calc(100vh - 68px);
+    }
+
+    .app-main > .container.py-4,
+    .app-main > .container-fluid.py-4 {
+        padding-top: 1.35rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .page-heading {
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.3rem;
+    }
+
+    .app-main h1.h3,
+    .app-main h1.h2,
+    .page-heading h1 {
+        font-size: 1.5rem;
+    }
+
+    .row {
+        --bs-gutter-x: 0.85rem;
+        --bs-gutter-y: 0.95rem;
+    }
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-header {
+        min-height: 52px;
+        padding: 0.8rem 1rem;
+    }
+
+    .list-group-item {
+        padding: 0.95rem 1rem;
+    }
+
+    .auth-wrapper {
+        min-height: calc(100vh - 68px);
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    .auth-wrapper .card-body {
+        padding: 1.4rem !important;
+    }
+
+    .auth-wrapper .row {
+        --bs-gutter-x: 0.8rem;
+        --bs-gutter-y: 0.85rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px;
+    }
+
+    .btn {
+        max-width: 100%;
+    }
+
+    .submission-area .d-flex {
+        align-items: flex-start !important;
+    }
+
+    .submission-area .btn {
+        white-space: normal;
+    }
+
+    .flash-container {
+        padding-top: 0.75rem;
+    }
+}
+
+/* ---------- 20. Motion accessibility ---------- */
+
 @media (prefers-reduced-motion: reduce) {
-    .role-toggle-option {
-        transition: none;
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
