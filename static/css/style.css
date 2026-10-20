@@ -11,8 +11,38 @@
     white-space: pre-line;
 }
 
+/* ---------- Enhanced Password Toggle Styling ---------- */
+.password-toggle {
+    background-color: #fff;
+    border-color: #ced4da;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.password-toggle:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd; /* Bootstrap primary blue */
+    border-color: #ced4da;
+}
+
+.password-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: #86b7fe;
+    color: #0d6efd;
+    z-index: 3;
+}
+
 .password-toggle svg {
     display: block;
+    transition: transform 0.2s ease;
+}
+
+.password-toggle:active svg {
+    transform: scale(0.92); /* Subtle press animation */
 }
 
 .btn.btn-submit:hover,
