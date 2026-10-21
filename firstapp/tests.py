@@ -58,15 +58,17 @@ class LoginViewTests(TestCase):
                 self.assertContains(response, 'document.querySelector(".auth-wrapper .card")')
                 self.assertContains(response, "gsap.fromTo(")
 
-    def test_authenticated_user_does_not_see_navbar_on_login_pages(self):
+    def test_authenticated_user_is_redirected_to_dashboard_from_login_pages(self):
         self.client.force_login(self.teacher)
 
         for page in ("login", "home"):
             with self.subTest(page=page):
                 response = self.client.get(reverse(page))
 
-                self.assertNotContains(response, 'class="navbar navbar-expand navbar-app"')
-                self.assertNotContains(response, "Sign out")
+                self.assertRedirects(
+                    response,
+                    reverse("teacher_dashboard"),
+                )
 
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
@@ -109,6 +111,33 @@ class LoginViewTests(TestCase):
                 self.client.get(reverse("logout"))
                 response = self.client.get(dashboard_url)
 
+                self.assertRedirects(
+                    response,
+                    f"{reverse('login')}?next={dashboard_url}",
+                )
+
+    def test_logo_navigation_then_sign_out_does_not_restore_dashboard(self):
+        for user, dashboard in (
+            (self.student, "student_dashboard"),
+            (self.teacher, "teacher_dashboard"),
+        ):
+            with self.subTest(role=user.profile.role):
+                dashboard_url = reverse(dashboard)
+                self.client.force_login(user)
+
+                logo_response = self.client.get(reverse("home"))
+                self.assertRedirects(logo_response, dashboard_url)
+
+                dashboard_response = self.client.get(dashboard_url)
+                self.assertContains(
+                    dashboard_response,
+                    'event.persisted && document.querySelector(".navbar-app")',
+                )
+
+                logout_response = self.client.get(reverse("logout"))
+                self.assertIn("no-store", logout_response["Cache-Control"])
+
+                response = self.client.get(dashboard_url)
                 self.assertRedirects(
                     response,
                     f"{reverse('login')}?next={dashboard_url}",

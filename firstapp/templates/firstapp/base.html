@@ -81,6 +81,14 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 
     <script>
+        window.addEventListener("pageshow", (event) => {
+            if (event.persisted && document.querySelector(".navbar-app")) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    <script>
         (() => {
             const reduceMotion = window.matchMedia(
                 "(prefers-reduced-motion: reduce)"

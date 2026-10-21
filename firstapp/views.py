@@ -25,11 +25,27 @@ MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 @never_cache
 def home(request):
+    if request.user.is_authenticated:
+        dashboard = (
+            "teacher_dashboard"
+            if request.user.profile.role == "teacher"
+            else "student_dashboard"
+        )
+        return redirect(dashboard)
+
     return render(request, "firstapp/login.html")
 
 
 @never_cache
 def login_view(request):
+    if request.method == "GET" and request.user.is_authenticated:
+        dashboard = (
+            "teacher_dashboard"
+            if request.user.profile.role == "teacher"
+            else "student_dashboard"
+        )
+        return redirect(dashboard)
+
     if request.method == "POST":
         email = request.POST.get("email", "").strip()
         password = request.POST.get("password")
@@ -69,6 +85,7 @@ def login_view(request):
     return render(request, "firstapp/login.html")
 
 
+@never_cache
 def logout_view(request):
     logout(request)
     return redirect("login")
