@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.db import transaction
 
@@ -22,10 +23,12 @@ TEACHER_CLASSROOM_KEY = "TYITF2"
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 
+@never_cache
 def home(request):
     return render(request, "firstapp/login.html")
 
 
+@never_cache
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email", "").strip()
@@ -71,6 +74,7 @@ def logout_view(request):
     return redirect("login")
 
 
+@never_cache
 def register(request):
     if request.method == "POST":
         username = request.POST.get("username", "").strip()
@@ -133,6 +137,7 @@ def register(request):
     return render(request, "firstapp/register.html")
 
 
+@never_cache
 @login_required
 def student_dashboard(request):
     if request.user.profile.role != "student":
@@ -161,6 +166,8 @@ def student_dashboard(request):
         {"classroom": classroom, "assignments": assignments}
     )
 
+
+@never_cache
 @login_required
 def teacher_dashboard(request):
     if request.user.profile.role != "teacher":
@@ -242,6 +249,7 @@ def create_assignment(request):
     return redirect("teacher_dashboard")
 
 
+@never_cache
 @login_required
 def edit_assignment(request, assignment_id):
     if request.user.profile.role != "teacher":
@@ -313,6 +321,7 @@ def delete_assignment(request, assignment_id):
     return redirect("teacher_dashboard")
 
 
+@never_cache
 def forgot_password(request):
     if request.method != "POST":
         return render(request, "firstapp/forgot_password.html")

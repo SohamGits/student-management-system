@@ -4,7 +4,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from .models import Assignment, Classroom, Submission, UserProfile
@@ -93,6 +93,53 @@ class LoginViewTests(TestCase):
 
         self.assertRedirects(response, reverse("teacher_dashboard"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.teacher.pk)
+
+    def test_dashboards_are_not_cached_after_sign_out(self):
+        for user, dashboard in (
+            (self.student, "student_dashboard"),
+            (self.teacher, "teacher_dashboard"),
+        ):
+            with self.subTest(role=user.profile.role):
+                dashboard_url = reverse(dashboard)
+                self.client.force_login(user)
+
+                dashboard_response = self.client.get(dashboard_url)
+                self.assertIn("no-store", dashboard_response["Cache-Control"])
+
+                self.client.get(reverse("logout"))
+                response = self.client.get(dashboard_url)
+
+                self.assertRedirects(
+                    response,
+                    f"{reverse('login')}?next={dashboard_url}",
+                )
+
+    def test_login_form_csrf_token_is_valid_and_rotates_after_login(self):
+        client = Client(enforce_csrf_checks=True)
+        response = client.get(reverse("login"))
+        self.assertIn("no-store", response["Cache-Control"])
+
+        csrf_cookie_before_login = client.cookies["csrftoken"].value
+        response_content = response.content.decode()
+        csrf_token = response_content.split(
+            'name="csrfmiddlewaretoken" value="', 1
+        )[1].split('"', 1)[0]
+
+        response = client.post(
+            reverse("login"),
+            {
+                "email": self.student.email,
+                "password": self.password,
+                "role": "student",
+                "csrfmiddlewaretoken": csrf_token,
+            },
+        )
+
+        self.assertRedirects(response, reverse("student_dashboard"))
+        self.assertNotEqual(
+            client.cookies["csrftoken"].value,
+            csrf_cookie_before_login,
+        )
 
     def test_invalid_password_shows_login_error(self):
         response = self.client.post(
