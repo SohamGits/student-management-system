@@ -143,16 +143,22 @@ Then open **http://127.0.0.1:8000/** in your browser.
 
 <table>
   <tr>
-    <td align="center" width="25%">🔐<br/><b>Email Login</b><br/><sub>Email-based login with role verification</sub></td>
-    <td align="center" width="25%">🛡️<br/><b>Secure Passwords</b><br/><sub>Hashed via Django's authentication system</sub></td>
-    <td align="center" width="25%">✅<br/><b>Smart Validation</b><br/><sub>Duplicate username/email checks and password confirmation</sub></td>
-    <td align="center" width="25%">🚧<br/><b>Protected Routes</b><br/><sub>Automatic redirect for unauthenticated users</sub></td>
+    <td align="center" width="25%">🔐<br/><b>Email Login</b><br/><sub>Email + password, with the selected role verified against the account</sub></td>
+    <td align="center" width="25%">📝<br/><b>Registration</b><br/><sub>Student and Teacher sign-up with date of birth and password confirmation</sub></td>
+    <td align="center" width="25%">✅<br/><b>Validation</b><br/><sub>Duplicate username/email checks, password-mismatch errors, teacher key check</sub></td>
+    <td align="center" width="25%">🔁<br/><b>Password Reset</b><br/><sub>Reset via email + date of birth, rate-limited to 5 attempts per 15 minutes</sub></td>
   </tr>
   <tr>
-    <td align="center" width="25%">🏫<br/><b>Classrooms</b><br/><sub>Teachers create classrooms and enroll students</sub></td>
-    <td align="center" width="25%">📝<br/><b>Assignments</b><br/><sub>Publish with optional file attachments</sub></td>
-    <td align="center" width="25%">📤<br/><b>Submissions</b><br/><sub>Students submit work securely</sub></td>
-    <td align="center" width="25%">👥<br/><b>Role Dashboards</b><br/><sub>Separate views for teachers and students</sub></td>
+    <td align="center" width="25%">🏫<br/><b>Shared Classrooms</b><br/><sub>Teachers join a classroom via its unique key; multiple teachers can share one</sub></td>
+    <td align="center" width="25%">🎓<br/><b>Student Enrollment</b><br/><sub>Teachers add registered students by email; unenrolled students see an empty state</sub></td>
+    <td align="center" width="25%">👥<br/><b>Role Dashboards</b><br/><sub>Separate Teacher and Student views, with wrong-role access redirected</sub></td>
+    <td align="center" width="25%">🛠️<br/><b>Django Admin</b><br/><sub>Built-in admin for managing records</sub></td>
+  </tr>
+  <tr>
+    <td align="center" width="25%">📚<br/><b>Assignments</b><br/><sub>Create, edit, and delete assignments with description and deadline</sub></td>
+    <td align="center" width="25%">📎<br/><b>Attachments</b><br/><sub>Optional assignment file (up to 10 MB)</sub></td>
+    <td align="center" width="25%">📤<br/><b>File Submissions</b><br/><sub>Students upload work (up to 10 MB) and can resubmit; one submission per student per assignment</sub></td>
+    <td align="center" width="25%">⏰<br/><b>Late Tracking</b><br/><sub>Submissions are flagged as late when sent after the deadline</sub></td>
   </tr>
 </table>
 
@@ -162,14 +168,19 @@ The project relies on Django's built-in security and authentication mechanisms w
 
 | Mechanism | Purpose |
 |:---|:---|
-| 🔑 **Password hashing** | Django's secure password storage |
-| 🍪 **Authentication sessions** | Django session-based auth |
-| 🛡️ **CSRF protection** | Guards against cross-site request forgery |
-| 🚪 **Login-protected views** | Only authenticated users reach private pages |
-| ✔️ **Server-side validation** | Input is verified on the backend |
-| 🎭 **Role verification** | Teacher and student access is separated |
-| 🔗 **Database-level relationships** | Data integrity through model relations |
-| 🗄️ **Django ORM** | No manually constructed SQL queries |
+| 🔑 **Password hashing** | Passwords are stored via Django's authentication system |
+| 🍪 **Session authentication** | Django session-based login/logout; dashboards use `never_cache` |
+| 🛡️ **CSRF protection** | Django's CSRF middleware is enabled |
+| 🚪 **Login-protected views** | `@login_required` on dashboards and assignment/submission actions |
+| 🎭 **Role verification** | Role is checked at login and in every teacher/student view |
+| 👤 **Ownership checks** | Only the teacher who created an assignment can edit or delete it; only enrolled students can submit |
+| 📏 **Upload limits** | 10 MB cap on attachments and submissions |
+| ⏱️ **Reset rate limiting** | Password-reset attempts are limited per email |
+| ✔️ **Server-side validation** | Required fields, duplicates, and password rules (on reset) are checked on the backend |
+| 🗄️ **Django ORM** | No manually constructed SQL; a unique constraint enforces one submission per student per assignment |
+
+> ⚠️ **Note:** This is a learning/portfolio project. The teacher classroom key and Django settings are development-grade and need hardening before real-world use.
+<br>
 
 ## 🤝 Contributing
 
