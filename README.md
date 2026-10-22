@@ -3,7 +3,7 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,18,24&height=240&section=header&text=Student%20Management%20System&fontSize=46&fontColor=ffffff&animation=fadeIn&fontAlignY=36&desc=Classrooms%20%C2%B7%20Assignments%20%C2%B7%20Submissions&descSize=18&descAlignY=58" alt="Student Management System banner" width="100%"/>
 
 <a href="https://github.com/SohamGits/student-management-system">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=36BCF7&center=true&vCenter=true&width=800&lines=A+full-stack+Django+web+application;Role-based+dashboards+for+teachers+%26+students;Create+classrooms+%E2%80%A2+Publish+assignments+%E2%80%A2+Review+submissions" alt="Typing animation" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=23&duration=3000&pause=1000&color=00b7a4&center=true&vCenter=true&width=827&lines=A+full-stack+Django+web+application;Role-based+dashboards+for+teachers+%26+students;Create+classrooms+%E2%80%A2+Publish+assignments+%E2%80%A2+Review+submissions" alt="Typing animation" />
 </a>
 
 <br/>
