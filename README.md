@@ -589,13 +589,11 @@ Possible improvements beyond the current project scope include:
 
 ---
 
-## 👨‍💻 Author
+**SohamGits**
 
-**Soham Shinde**
-
-GitHub: [SohamGits](https://github.com/SohamGits)
-
-Repository: [student-management-system](https://github.com/SohamGits/student-management-system)
+[![GitHub](https://img.shields.io/badge/GitHub-@SohamGits-181717?style=for-the-badge&logo=github)](https://github.com/SohamGits)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Soham_Shinde-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/soham-shinde-865648388/)
+[![Project](https://img.shields.io/badge/Project-Repository-orange?style=for-the-badge&logo=github)](https://github.com/SohamGits/student-management-system)
 
 ---
 
