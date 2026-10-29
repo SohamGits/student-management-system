@@ -27,6 +27,12 @@ $(function () {
             .addClass("text-muted")
             .text(data.submitted_at)
             .appendTo($status);
+
+        const $badge = $status.closest("li").find(".deadline-badge");
+        const label = $badge.attr("data-label");
+        $badge.removeClass("deadline-badge text-bg-danger text-bg-warning")
+              .addClass("text-bg-success")
+              .text("Submitted · due " + label);
     }
 
     $(".btn-submit").on("click", function () {

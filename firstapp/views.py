@@ -106,28 +106,31 @@ def register(request):
             return render(
                 request,
                 "firstapp/register.html",
-                {"error": "Passwords do not match."},
+                {"error": "Passwords do not match.", "form": request.POST},
             )
 
         if User.objects.filter(username=username).exists():
             return render(
                 request,
                 "firstapp/register.html",
-                {"error": "Username already exists."},
+                {"error": "Username already exists.", "form": request.POST},
             )
 
         if User.objects.filter(email=email).exists():
             return render(
                 request,
                 "firstapp/register.html",
-                {"error": "An account with this email already exists."},
+                {
+                    "error": "An account with this email already exists.",
+                    "form": request.POST,
+                },
             )
 
         if role == "teacher" and teacher_key != TEACHER_CLASSROOM_KEY:
             return render(
                 request,
                 "firstapp/register.html",
-                {"error": "Invalid classroom key."},
+                {"error": "Invalid classroom key.", "form": request.POST},
             )
 
         user = User.objects.create_user(
@@ -166,6 +169,13 @@ def student_dashboard(request):
     if classroom:
         assignments = list(
             classroom.assignments.select_related("teacher")
+        )
+        now = timezone.now()
+        assignments.sort(
+            key=lambda a: (
+                a.deadline < now,
+                abs((a.deadline - now).total_seconds()),
+            )
         )
         my_submissions = {
             submission.assignment_id: submission
@@ -222,6 +232,13 @@ def teacher_dashboard(request):
             classroom.assignments
             .select_related("teacher")
             .prefetch_related("submissions__student")
+        )
+        now = timezone.now()
+        assignments.sort(
+            key=lambda a: (
+                a.deadline < now,
+                abs((a.deadline - now).total_seconds()),
+            )
         )
 
     return render(
@@ -446,6 +463,9 @@ def download_submission(request, submission_id):
 
     is_owner = submission.student_id == request.user.id
     is_posting_teacher = submission.assignment.teacher_id == request.user.id
+
+    if not (is_owner or is_posting_teacher):
+        raise Http404("Submission not found.")
 
     try:
         file_handle = submission.file.open("rb")

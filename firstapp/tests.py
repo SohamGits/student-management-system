@@ -183,6 +183,58 @@ class LoginViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid email or password.")
 
+    def test_registration_errors_preserve_non_password_fields(self):
+        registration_inputs = (
+            {
+                "username": "retained-user",
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "first-password",
+                "confirm_password": "different-password",
+                "role": "student",
+            },
+            {
+                "username": self.student.username,
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "student",
+            },
+            {
+                "username": "retained-user",
+                "email": self.student.email,
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "student",
+            },
+            {
+                "username": "retained-user",
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "teacher",
+                "teacher_key": "invalid-key",
+            },
+        )
+
+        for form_data in registration_inputs:
+            with self.subTest(error_fields=list(form_data)):
+                response = self.client.post(reverse("register"), form_data)
+                response_content = response.content.decode()
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(f'value="{form_data["username"]}"', response_content)
+                self.assertIn(f'value="{form_data["email"]}"', response_content)
+                self.assertIn(f'value="{form_data["dob"]}"', response_content)
+                self.assertNotIn(f'value="{form_data["password"]}"', response_content)
+                self.assertNotIn(
+                    f'value="{form_data["confirm_password"]}"',
+                    response_content,
+                )
+
 
 class AssignmentEditViewTests(TestCase):
     def setUp(self):
