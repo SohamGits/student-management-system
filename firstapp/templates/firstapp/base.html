@@ -40,19 +40,21 @@
                     </span>
                 </div>
 
-                <a href="{% url 'logout' %}"
-                   class="btn btn-logout">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         width="17" height="17" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="1.8"
-                         stroke-linecap="round" stroke-linejoin="round"
-                         aria-hidden="true">
-                        <path d="M10 17l5-5-5-5"/>
-                        <path d="M15 12H3"/>
-                        <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
-                    </svg>
-                    <span>Sign out</span>
-                </a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-logout">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="17" height="17" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" stroke-linejoin="round"
+                             aria-hidden="true">
+                            <path d="M10 17l5-5-5-5"/>
+                            <path d="M15 12H3"/>
+                            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
+                        </svg>
+                        <span>Sign out</span>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>

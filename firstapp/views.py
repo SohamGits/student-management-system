@@ -86,6 +86,7 @@ def login_view(request):
 
 
 @never_cache
+@require_POST
 def logout_view(request):
     logout(request)
     return redirect("login")
@@ -182,7 +183,7 @@ def student_dashboard(request):
             for submission in Submission.objects.filter(
                 student=request.user,
                 assignment__in=assignments
-            )
+            ).select_related("assignment")
         }
         for assignment in assignments:
             assignment.my_submission = my_submissions.get(assignment.id)

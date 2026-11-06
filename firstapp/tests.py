@@ -2,9 +2,11 @@ import tempfile
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.db import connection
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from .models import Assignment, Classroom, Submission, UserProfile
@@ -108,7 +110,7 @@ class LoginViewTests(TestCase):
                 dashboard_response = self.client.get(dashboard_url)
                 self.assertIn("no-store", dashboard_response["Cache-Control"])
 
-                self.client.get(reverse("logout"))
+                self.client.post(reverse("logout"))
                 response = self.client.get(dashboard_url)
 
                 self.assertRedirects(
@@ -134,7 +136,7 @@ class LoginViewTests(TestCase):
                     'event.persisted && document.querySelector(".navbar-app")',
                 )
 
-                logout_response = self.client.get(reverse("logout"))
+                logout_response = self.client.post(reverse("logout"))
                 self.assertIn("no-store", logout_response["Cache-Control"])
 
                 response = self.client.get(dashboard_url)
@@ -142,6 +144,14 @@ class LoginViewTests(TestCase):
                     response,
                     f"{reverse('login')}?next={dashboard_url}",
                 )
+
+    def test_logout_rejects_get_without_signing_out(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.student.pk)
 
     def test_login_form_csrf_token_is_valid_and_rotates_after_login(self):
         client = Client(enforce_csrf_checks=True)
@@ -425,6 +435,38 @@ class StudentDashboardSubmissionTests(TestCase):
         )
         self.assertContains(response, 'src="/static/js/submission.js"')
         self.assertContains(response, "Make submission")
+
+    def test_submission_queries_do_not_grow_with_assignment_count(self):
+        Submission.objects.create(
+            assignment=self.assignment,
+            student=self.student,
+            file="submission_1.txt",
+        )
+        dashboard_url = reverse("student_dashboard")
+
+        with CaptureQueriesContext(connection) as one_submission_queries:
+            self.client.get(dashboard_url)
+
+        for index in range(2, 13):
+            assignment = Assignment.objects.create(
+                classroom=self.classroom,
+                teacher=self.assignment.teacher,
+                title=f"Assignment {index}",
+                deadline="2030-01-01T12:00:00Z",
+            )
+            Submission.objects.create(
+                assignment=assignment,
+                student=self.student,
+                file=f"submission_{index}.txt",
+            )
+
+        with CaptureQueriesContext(connection) as twelve_submission_queries:
+            self.client.get(dashboard_url)
+
+        self.assertEqual(
+            len(one_submission_queries),
+            len(twelve_submission_queries),
+        )
 
     def test_student_can_submit_assignment_file(self):
         temp_dir = tempfile.TemporaryDirectory()
