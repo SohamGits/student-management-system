@@ -2,10 +2,11 @@ import tempfile
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import connection
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
@@ -483,15 +484,15 @@ class StudentDashboardSubmissionTests(TestCase):
             reverse("submit_assignment", args=[self.assignment.pk]),
             {
                 "file": SimpleUploadedFile(
-                    "homework.txt",
-                    b"Assignment response",
-                    content_type="text/plain",
+                    "homework.pdf",
+                    b"%PDF-1.7\nAssignment response",
+                    content_type="application/pdf",
                 ),
             },
         )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["file_name"], "homework.txt")
+        self.assertEqual(response.json()["file_name"], "homework.pdf")
         self.assertTrue(
             Submission.objects.filter(
                 assignment=self.assignment,
@@ -499,8 +500,168 @@ class StudentDashboardSubmissionTests(TestCase):
             ).exists()
         )
 
+    def test_student_upload_rejects_unsupported_or_mismatched_file_types(self):
+        for filename, content in (
+            ("homework.html", b"<html>active content</html>"),
+            ("homework.pdf", b"<html>not a PDF</html>"),
+        ):
+            with self.subTest(filename=filename):
+                response = self.client.post(
+                    reverse("submit_assignment", args=[self.assignment.pk]),
+                    {
+                        "file": SimpleUploadedFile(
+                            filename,
+                            content,
+                            content_type="application/pdf",
+                        ),
+                    },
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(
+                    Submission.objects.filter(
+                        assignment=self.assignment,
+                        student=self.student,
+                    ).exists()
+                )
+
+    @override_settings(MAX_UPLOAD_BYTES=10, MAX_REQUEST_BODY_BYTES=10000)
+    def test_student_upload_size_limit_is_enforced_during_request_parsing(self):
+        response = self.client.post(
+            reverse("submit_assignment", args=[self.assignment.pk]),
+            {
+                "file": SimpleUploadedFile(
+                    "homework.pdf",
+                    b"%PDF-1.7\nthis is too large",
+                    content_type="application/pdf",
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 413)
+        self.assertFalse(
+            Submission.objects.filter(
+                assignment=self.assignment,
+                student=self.student,
+            ).exists()
+        )
+
+
+class AssignmentAttachmentSecurityTests(TestCase):
+    def setUp(self):
+        self.teacher = User.objects.create_user(
+            username="attachment-teacher",
+            email="attachment-teacher@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.teacher,
+            date_of_birth="1985-01-01",
+            role="teacher",
+        )
+        self.student = User.objects.create_user(
+            username="attachment-student",
+            email="attachment-student@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.student,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.classroom = Classroom.objects.create(
+            name="Attachment classroom",
+            key="ATTACHMENT-CLASSROOM",
+        )
+        self.classroom.teachers.add(self.teacher)
+        self.classroom.students.add(self.student)
+        self.client.force_login(self.teacher)
+
+    def test_teacher_cannot_create_assignment_with_active_content_upload(self):
+        response = self.client.post(
+            reverse("create_assignment"),
+            {
+                "title": "Unsafe attachment",
+                "description": "",
+                "deadline": "2030-01-01T12:00",
+                "attachment": SimpleUploadedFile(
+                    "unsafe.svg",
+                    b"<svg xmlns='http://www.w3.org/2000/svg'></svg>",
+                    content_type="image/svg+xml",
+                ),
+            },
+        )
+
+        self.assertRedirects(response, reverse("teacher_dashboard"))
+        self.assertFalse(Assignment.objects.filter(title="Unsafe attachment").exists())
+
+    def test_assignment_attachment_download_is_private_and_an_attachment(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            storage_patch = patch.object(
+                Assignment._meta.get_field("attachment"),
+                "storage",
+                FileSystemStorage(location=temp_dir),
+            )
+            storage_patch.start()
+            try:
+                assignment = Assignment.objects.create(
+                    classroom=self.classroom,
+                    teacher=self.teacher,
+                    title="Downloadable assignment",
+                    deadline="2030-01-01T12:00:00Z",
+                    attachment=SimpleUploadedFile(
+                        "instructions.pdf",
+                        b"%PDF-1.7\ninstructions",
+                        content_type="application/pdf",
+                    ),
+                )
+                self.client.force_login(self.student)
+                response = self.client.get(
+                    reverse(
+                        "download_assignment_attachment",
+                        args=[assignment.pk],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertTrue(
+                    response["Content-Disposition"].startswith("attachment;")
+                )
+                self.assertEqual(
+                    response["Content-Type"],
+                    "application/octet-stream",
+                )
+                self.assertEqual(response["Cache-Control"], "private, no-store")
+                self.assertEqual(response["X-Content-Type-Options"], "nosniff")
+                response.close()
+            finally:
+                storage_patch.stop()
+
+    def test_non_classroom_user_cannot_download_assignment_attachment(self):
+        assignment = Assignment.objects.create(
+            classroom=self.classroom,
+            teacher=self.teacher,
+            title="Private assignment",
+            deadline="2030-01-01T12:00:00Z",
+            attachment="assignment_attachments/instructions.pdf",
+        )
+        outsider = User.objects.create_user(username="outsider")
+        UserProfile.objects.create(
+            user=outsider,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.client.force_login(outsider)
+
+        response = self.client.get(
+            reverse("download_assignment_attachment", args=[assignment.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
 
 class ForgotPasswordViewTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
     def test_page_loads_jquery_and_error_display(self):
         response = self.client.get(reverse("forgot_password"))
 
@@ -527,3 +688,20 @@ class ForgotPasswordViewTests(TestCase):
             response.json()["error"],
             "Email and date of birth do not match any account.",
         )
+
+    def test_password_reset_lockout_applies_after_five_attempts(self):
+        payload = {
+            "email": "unknown@example.com",
+            "dob": "2005-01-01",
+            "new_password": "a-strong-new-password-123",
+            "confirm_password": "a-strong-new-password-123",
+        }
+
+        for attempt in range(5):
+            with self.subTest(attempt=attempt + 1):
+                response = self.client.post(reverse("forgot_password"), payload)
+                self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(reverse("forgot_password"), payload)
+
+        self.assertEqual(response.status_code, 429)

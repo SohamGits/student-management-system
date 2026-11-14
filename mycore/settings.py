@@ -24,26 +24,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # (set on Render). The fallback below is only for local development.
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-insecure-key")
 
-# Render sets the RENDER environment variable, so DEBUG is on locally
-# and automatically off in production.
-DEBUG = "RENDER" not in os.environ
+DEBUG = os.environ.get("DEBUG", "false").strip().lower() in {"1", "true", "yes"}
 
 if not DEBUG and SECRET_KEY == "dev-only-insecure-key":
     raise ImproperlyConfigured("Set the SECRET_KEY environment variable.")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 
 if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    if RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
     # Render terminates HTTPS at its proxy; this tells Django the request was secure.
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+if DEBUG and not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+elif not DEBUG and not ALLOWED_HOSTS:
+    raise ImproperlyConfigured("Set ALLOWED_HOSTS in the environment.")
+
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 
 # Application definition
@@ -60,6 +73,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'firstapp.middleware.RequestBodyLimitMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -100,6 +114,32 @@ DATABASES = {
         conn_max_age=600,
     )
 }
+
+REDIS_URL = os.environ.get("REDIS_URL")
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
+    }
+elif DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+else:
+    raise ImproperlyConfigured("Set REDIS_URL to a shared Redis cache.")
+
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+MAX_REQUEST_BODY_BYTES = MAX_UPLOAD_BYTES + 1024 * 1024
+FILE_UPLOAD_HANDLERS = [
+    "firstapp.upload_handlers.UploadSizeLimitHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_REQUEST_BODY_BYTES
 
 
 # Password validation
@@ -156,8 +196,7 @@ if not DEBUG:
     )
 
 
-# User-uploaded files (assignment attachments)
-
+# User-uploaded assignment attachments are served only through authorized views.
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 

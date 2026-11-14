@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 from django.views.decorators.cache import never_cache
@@ -16,11 +17,12 @@ from django.db import transaction
 
 from .forms import AssignmentEditForm
 from .models import UserProfile, Classroom, Assignment, Submission
+from .upload_validation import has_allowed_file_type
 
 MAX_RESET_ATTEMPTS = 5
 RESET_LOCKOUT_SECONDS = 15 * 60
 TEACHER_CLASSROOM_KEY = "TYITF2"
-MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+MAX_UPLOAD_BYTES = settings.MAX_UPLOAD_BYTES
 
 
 @never_cache
@@ -266,10 +268,17 @@ def create_assignment(request):
         deadline = request.POST.get("deadline")
         attachment = request.FILES.get("attachment")
 
-        if not title or not deadline:
-            messages.error(request, "Title and deadline are required.")
-        elif attachment and attachment.size > 10 * 1024 * 1024:
+        if getattr(request, "upload_too_large", False):
             messages.error(request, "Attachment must be 10 MB or smaller.")
+        elif not title or not deadline:
+            messages.error(request, "Title and deadline are required.")
+        elif attachment and attachment.size > MAX_UPLOAD_BYTES:
+            messages.error(request, "Attachment must be 10 MB or smaller.")
+        elif attachment and not has_allowed_file_type(attachment):
+            messages.error(
+                request,
+                "Attachment must be a valid PDF, DOCX, image, or ZIP file.",
+            )
         else:
             Assignment.objects.create(
                 classroom=classroom,
@@ -367,9 +376,14 @@ def forgot_password(request):
     confirm_password = request.POST.get("confirm_password", "")
 
     attempts_key = f"reset_attempts:{email}"
-    attempts = cache.get(attempts_key, 0)
+    cache.add(attempts_key, 0, RESET_LOCKOUT_SECONDS)
+    try:
+        attempts = cache.incr(attempts_key)
+    except ValueError:
+        cache.add(attempts_key, 0, RESET_LOCKOUT_SECONDS)
+        attempts = cache.incr(attempts_key)
 
-    if attempts >= MAX_RESET_ATTEMPTS:
+    if attempts > MAX_RESET_ATTEMPTS:
         return JsonResponse(
             {"ok": False, "error": "Too many attempts. Please try again in 15 minutes."},
             status=429,
@@ -386,7 +400,6 @@ def forgot_password(request):
         ).select_related("user").first()
 
     if profile is None:
-        cache.set(attempts_key, attempts + 1, RESET_LOCKOUT_SECONDS)
         return JsonResponse(
             {"ok": False, "error": "Email and date of birth do not match any account."},
             status=400,
@@ -423,6 +436,11 @@ def submit_assignment(request, assignment_id):
 
     upload = request.FILES.get("file")
 
+    if getattr(request, "upload_too_large", False):
+        return JsonResponse(
+            {"ok": False, "error": "File must be 10 MB or smaller."}, status=413
+        )
+
     if upload is None:
         return JsonResponse(
             {"ok": False, "error": "Please choose a file."}, status=400
@@ -430,7 +448,16 @@ def submit_assignment(request, assignment_id):
 
     if upload.size > MAX_UPLOAD_BYTES:
         return JsonResponse(
-            {"ok": False, "error": "File must be 10 MB or smaller."}, status=400
+            {"ok": False, "error": "File must be 10 MB or smaller."}, status=413
+        )
+
+    if not has_allowed_file_type(upload):
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": "File must be a valid PDF, DOCX, image, or ZIP file.",
+            },
+            status=400,
         )
 
     submission, created = Submission.objects.get_or_create(
@@ -468,13 +495,42 @@ def download_submission(request, submission_id):
     if not (is_owner or is_posting_teacher):
         raise Http404("Submission not found.")
 
+    return _attachment_response(submission.file, submission.file_name())
+
+
+@login_required
+def download_assignment_attachment(request, assignment_id):
+    assignment = get_object_or_404(
+        Assignment.objects.select_related("classroom"),
+        pk=assignment_id,
+    )
+    has_access = (
+        assignment.classroom.students.filter(pk=request.user.pk).exists()
+        or assignment.classroom.teachers.filter(pk=request.user.pk).exists()
+    )
+    if not has_access:
+        raise Http404("Assignment not found.")
+    if not assignment.attachment:
+        raise Http404("Attachment not found.")
+
+    return _attachment_response(
+        assignment.attachment,
+        assignment.attachment_name(),
+    )
+
+
+def _attachment_response(stored_file, filename):
     try:
-        file_handle = submission.file.open("rb")
+        file_handle = stored_file.open("rb")
     except FileNotFoundError:
         raise Http404("The file is no longer available.")
 
-    return FileResponse(
+    response = FileResponse(
         file_handle,
         as_attachment=True,
-        filename=submission.file_name()
+        filename=filename,
+        content_type="application/octet-stream",
     )
+    response["Cache-Control"] = "private, no-store"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response

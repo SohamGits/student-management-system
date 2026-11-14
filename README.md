@@ -114,7 +114,7 @@ source venv/bin/activate
 **4. Install dependencies**
 
 ```bash
-pip install django
+pip install -r requirements.txt
 ```
 
 **5. Apply migrations**
@@ -138,6 +138,16 @@ python manage.py runserver
 ```
 
 Then open **http://127.0.0.1:8000/** in your browser.
+Local management commands use development defaults when no production
+configuration is present. Production commands require explicit settings.
+
+### Production configuration
+
+Set `DEBUG=false`, a strong `SECRET_KEY`, `ALLOWED_HOSTS`, and a shared Redis
+`REDIS_URL` in the deployment environment. Production startup requires these
+values; HTTPS redirects, secure cookies, and HSTS are enabled automatically.
+The app rejects request bodies larger than 11 MB and accepts 10 MB uploads only
+when their extension and file signature match PDF, DOCX, image, or ZIP formats.
 
 ## ✨ Features
 
@@ -165,6 +175,7 @@ Then open **http://127.0.0.1:8000/** in your browser.
 ## 🔒 Security
 
 The project relies on Django's built-in security and authentication mechanisms wherever appropriate.
+GitHub Actions runs a scheduled weekly `pip-audit` scan of the runtime dependencies.
 
 | Mechanism | Purpose |
 |:---|:---|
@@ -174,12 +185,13 @@ The project relies on Django's built-in security and authentication mechanisms w
 | 🚪 **Login-protected views** | `@login_required` on dashboards and assignment/submission actions |
 | 🎭 **Role verification** | Role is checked at login and in every teacher/student view |
 | 👤 **Ownership checks** | Only the teacher who created an assignment can edit or delete it; only enrolled students can submit |
-| 📏 **Upload limits** | 10 MB cap on attachments and submissions |
-| ⏱️ **Reset rate limiting** | Password-reset attempts are limited per email |
+| 📏 **Upload limits** | Streaming 10 MB cap and server-side file-type validation |
+| ⏱️ **Reset rate limiting** | Password-reset attempts are limited per email in shared Redis cache |
+| 📥 **Private downloads** | Classroom-authorized attachments use attachment disposition and `nosniff` |
 | ✔️ **Server-side validation** | Required fields, duplicates, and password rules (on reset) are checked on the backend |
 | 🗄️ **Django ORM** | No manually constructed SQL; a unique constraint enforces one submission per student per assignment |
 
-> ⚠️ **Note:** This is a learning/portfolio project. The teacher classroom key and Django settings are development-grade and need hardening before real-world use.
+> ⚠️ **Note:** This is a learning/portfolio project. The teacher classroom key should be replaced with a secure enrollment workflow before real-world use.
 <br>
 
 ## 🤝 Contributing

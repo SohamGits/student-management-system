@@ -7,6 +7,19 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mycore.settings')
+    production_settings = (
+        "SECRET_KEY",
+        "ALLOWED_HOSTS",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "RENDER",
+        "RENDER_EXTERNAL_HOSTNAME",
+    )
+    if "DEBUG" not in os.environ and not any(
+        name in os.environ for name in production_settings
+    ):
+        os.environ["DEBUG"] = "true"
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
