@@ -25,22 +25,22 @@
 
 <br/>
 
-<a href="https://student-management-system-qiku.onrender.com/"><img src="https://img.shields.io/badge/%F0%9F%8C%90_Live_Demo-Visit_Now-success?style=for-the-badge" alt="Live Demo"/></a>
-<a href="https://github.com/SohamGits/student-management-system/issues"><img src="https://img.shields.io/badge/%F0%9F%90%9B_Report-Bug-critical?style=for-the-badge" alt="Report Bug"/></a>
-<a href="https://github.com/SohamGits/student-management-system/issues"><img src="https://img.shields.io/badge/%E2%9C%A8_Request-Feature-informational?style=for-the-badge" alt="Request Feature"/></a>
+<a href="https://student-management-system-qiku.onrender.com/"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/web-dark.svg"><img src="assets/readme-icons/web.svg" alt="" width="16" height="16"></picture> <img src="https://img.shields.io/badge/Live_Demo-Visit_Now-success?style=for-the-badge" alt="Live Demo"/></a>
+<a href="https://github.com/SohamGits/student-management-system/issues"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/bug-dark.svg"><img src="assets/readme-icons/bug.svg" alt="" width="16" height="16"></picture> <img src="https://img.shields.io/badge/Report-Bug-critical?style=for-the-badge" alt="Report Bug"/></a>
+<a href="https://github.com/SohamGits/student-management-system/issues"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/lightbulb-on-outline-dark.svg"><img src="assets/readme-icons/lightbulb-on-outline.svg" alt="" width="16" height="16"></picture> <img src="https://img.shields.io/badge/Request-Feature-informational?style=for-the-badge" alt="Request Feature"/></a>
 
 </div>
 
 <img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=12,14,18,24&height=4&section=header" width="100%" alt="divider"/>
 
-## 📖 About
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/book-open-page-variant-dark.svg"><img src="assets/readme-icons/book-open-page-variant.svg" alt="" width="20" height="20"></picture> About
 
 **Student Management System** is a full-stack web application built with **Python** and **Django** that lets teachers and students manage classrooms, assignments, and submissions through **role-based dashboards**.
 
 <table align="center">
   <tr>
     <td width="50%" valign="top">
-      <h3 align="center">👩‍🏫 For Teachers</h3>
+      <h3 align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-tie-dark.svg"><img src="assets/readme-icons/account-tie.svg" alt="" width="20" height="20"></picture> For Teachers</h3>
       <ul>
         <li>Create and manage classrooms</li>
         <li>Enroll students</li>
@@ -49,7 +49,7 @@
       </ul>
     </td>
     <td width="50%" valign="top">
-      <h3 align="center">🎓 For Students</h3>
+      <h3 align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/school-dark.svg"><img src="assets/readme-icons/school.svg" alt="" width="20" height="20"></picture> For Students</h3>
       <ul>
         <li>View your classroom</li>
         <li>Access published assignments</li>
@@ -60,17 +60,17 @@
   </tr>
 </table>
 
-## 📋 Table of Contents
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/format-list-bulleted-dark.svg"><img src="assets/readme-icons/format-list-bulleted.svg" alt="" width="20" height="20"></picture> Table of Contents
 
 | | | |
 |---|---|---|
-| [🌐 Demo](#-demo) | [🚀 Installation](#-installation) | [💻 Usage](#-usage) |
-| [✨ Features](#-features) | [🔒 Security](#-security) | [🤝 Contributing](#-contributing) |
-| [📄 License](#-license) | [👤 Contact](#-contact) | |
+| [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/web-dark.svg"><img src="assets/readme-icons/web.svg" alt="" width="16" height="16"></picture> Demo](#demo) | [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/rocket-launch-dark.svg"><img src="assets/readme-icons/rocket-launch.svg" alt="" width="16" height="16"></picture> Installation](#installation) | [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/console-dark.svg"><img src="assets/readme-icons/console.svg" alt="" width="16" height="16"></picture> Usage](#usage) |
+| [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/creation-dark.svg"><img src="assets/readme-icons/creation.svg" alt="" width="16" height="16"></picture> Features](#features) | [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/shield-lock-dark.svg"><img src="assets/readme-icons/shield-lock.svg" alt="" width="16" height="16"></picture> Security](#security) | [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/handshake-dark.svg"><img src="assets/readme-icons/handshake.svg" alt="" width="16" height="16"></picture> Contributing](#contributing) |
+| [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/file-document-outline-dark.svg"><img src="assets/readme-icons/file-document-outline.svg" alt="" width="16" height="16"></picture> License](#license) | [<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-dark.svg"><img src="assets/readme-icons/account.svg" alt="" width="16" height="16"></picture> Contact](#contact) | |
 
-## 🌐 Demo
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/web-dark.svg"><img src="assets/readme-icons/web.svg" alt="" width="20" height="20"></picture> Demo
 
-> 🔗 **Try it live:** [student-management-system-qiku.onrender.com](https://student-management-system-qiku.onrender.com/)
+> <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/web-dark.svg"><img src="assets/readme-icons/web.svg" alt="" width="18" height="18"></picture> **Try it live:** [student-management-system-qiku.onrender.com](https://student-management-system-qiku.onrender.com/)
 >
 > *Hosted on Render's free tier, so the first load may take a few seconds while the server wakes up.*
 
@@ -81,10 +81,10 @@
 </p>
 -->
 
-## 🚀 Installation
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/rocket-launch-dark.svg"><img src="assets/readme-icons/rocket-launch.svg" alt="" width="20" height="20"></picture> Installation
 
 <details open>
-<summary><b>📦 Step-by-step setup</b></summary>
+<summary><b><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/package-variant-dark.svg"><img src="assets/readme-icons/package-variant.svg" alt="" width="18" height="18"></picture> Step-by-step setup</b></summary>
 
 <br/>
 
@@ -131,7 +131,7 @@ python manage.py createsuperuser
 
 </details>
 
-## 💻 Usage
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/console-dark.svg"><img src="assets/readme-icons/console.svg" alt="" width="20" height="20"></picture> Usage
 
 ```bash
 python manage.py runserver
@@ -149,66 +149,66 @@ values; HTTPS redirects, secure cookies, and HSTS are enabled automatically.
 The app rejects request bodies larger than 11 MB and accepts 10 MB uploads only
 when their extension and file signature match PDF, DOCX, image, or ZIP formats.
 
-## ✨ Features
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/creation-dark.svg"><img src="assets/readme-icons/creation.svg" alt="" width="20" height="20"></picture> Features
 
 <table>
   <tr>
-    <td align="center" width="25%">🔐<br/><b>Email Login</b><br/><sub>Email + password, with the selected role verified against the account</sub></td>
-    <td align="center" width="25%">📝<br/><b>Registration</b><br/><sub>Student and Teacher sign-up with date of birth and password confirmation</sub></td>
-    <td align="center" width="25%">✅<br/><b>Validation</b><br/><sub>Duplicate username/email checks, password-mismatch errors, teacher key check</sub></td>
-    <td align="center" width="25%">🔁<br/><b>Password Reset</b><br/><sub>Reset via email + date of birth, rate-limited to 5 attempts per 15 minutes</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/key-dark.svg"><img src="assets/readme-icons/key.svg" alt="" width="22" height="22"></picture><br/><b>Email Login</b><br/><sub>Email + password, with the selected role verified against the account</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-edit-dark.svg"><img src="assets/readme-icons/account-edit.svg" alt="" width="22" height="22"></picture><br/><b>Registration</b><br/><sub>Student and Teacher sign-up with date of birth and password confirmation</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/check-circle-dark.svg"><img src="assets/readme-icons/check-circle.svg" alt="" width="22" height="22"></picture><br/><b>Validation</b><br/><sub>Duplicate username/email checks, password-mismatch errors, teacher key check</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/lock-reset-dark.svg"><img src="assets/readme-icons/lock-reset.svg" alt="" width="22" height="22"></picture><br/><b>Password Reset</b><br/><sub>Reset via email + date of birth, rate-limited to 5 attempts per 15 minutes</sub></td>
   </tr>
   <tr>
-    <td align="center" width="25%">🏫<br/><b>Shared Classrooms</b><br/><sub>Teachers join a classroom via its unique key; multiple teachers can share one</sub></td>
-    <td align="center" width="25%">🎓<br/><b>Student Enrollment</b><br/><sub>Teachers add registered students by email; unenrolled students see an empty state</sub></td>
-    <td align="center" width="25%">👥<br/><b>Role Dashboards</b><br/><sub>Separate Teacher and Student views, with wrong-role access redirected</sub></td>
-    <td align="center" width="25%">🛠️<br/><b>Django Admin</b><br/><sub>Built-in admin for managing records</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/domain-dark.svg"><img src="assets/readme-icons/domain.svg" alt="" width="22" height="22"></picture><br/><b>Shared Classrooms</b><br/><sub>Teachers join a classroom via its unique key; multiple teachers can share one</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-school-dark.svg"><img src="assets/readme-icons/account-school.svg" alt="" width="22" height="22"></picture><br/><b>Student Enrollment</b><br/><sub>Teachers add registered students by email; unenrolled students see an empty state</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-group-dark.svg"><img src="assets/readme-icons/account-group.svg" alt="" width="22" height="22"></picture><br/><b>Role Dashboards</b><br/><sub>Separate Teacher and Student views, with wrong-role access redirected</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/cog-dark.svg"><img src="assets/readme-icons/cog.svg" alt="" width="22" height="22"></picture><br/><b>Django Admin</b><br/><sub>Built-in admin for managing records</sub></td>
   </tr>
   <tr>
-    <td align="center" width="25%">📚<br/><b>Assignments</b><br/><sub>Create, edit, and delete assignments with description and deadline</sub></td>
-    <td align="center" width="25%">📎<br/><b>Attachments</b><br/><sub>Optional assignment file (up to 10 MB)</sub></td>
-    <td align="center" width="25%">📤<br/><b>File Submissions</b><br/><sub>Students upload work (up to 10 MB) and can resubmit; one submission per student per assignment</sub></td>
-    <td align="center" width="25%">⏰<br/><b>Late Tracking</b><br/><sub>Submissions are flagged as late when sent after the deadline</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/book-multiple-dark.svg"><img src="assets/readme-icons/book-multiple.svg" alt="" width="22" height="22"></picture><br/><b>Assignments</b><br/><sub>Create, edit, and delete assignments with description and deadline</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/paperclip-dark.svg"><img src="assets/readme-icons/paperclip.svg" alt="" width="22" height="22"></picture><br/><b>Attachments</b><br/><sub>Optional assignment file (up to 10 MB)</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/cloud-upload-dark.svg"><img src="assets/readme-icons/cloud-upload.svg" alt="" width="22" height="22"></picture><br/><b>File Submissions</b><br/><sub>Students upload work (up to 10 MB) and can resubmit; one submission per student per assignment</sub></td>
+    <td align="center" width="25%"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/clock-outline-dark.svg"><img src="assets/readme-icons/clock-outline.svg" alt="" width="22" height="22"></picture><br/><b>Late Tracking</b><br/><sub>Submissions are flagged as late when sent after the deadline</sub></td>
   </tr>
 </table>
 
-## 🔒 Security
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/shield-lock-dark.svg"><img src="assets/readme-icons/shield-lock.svg" alt="" width="20" height="20"></picture> Security
 
 The project relies on Django's built-in security and authentication mechanisms wherever appropriate.
 GitHub Actions runs a scheduled weekly `pip-audit` scan of the runtime dependencies.
 
 | Mechanism | Purpose |
 |:---|:---|
-| 🔑 **Password hashing** | Passwords are stored via Django's authentication system |
-| 🍪 **Session authentication** | Django session-based login/logout; dashboards use `never_cache` |
-| 🛡️ **CSRF protection** | Django's CSRF middleware is enabled |
-| 🚪 **Login-protected views** | `@login_required` on dashboards and assignment/submission actions |
-| 🎭 **Role verification** | Role is checked at login and in every teacher/student view |
-| 👤 **Ownership checks** | Only the teacher who created an assignment can edit or delete it; only enrolled students can submit |
-| 📏 **Upload limits** | Streaming 10 MB cap and server-side file-type validation |
-| ⏱️ **Reset rate limiting** | Password-reset attempts are limited per email in shared Redis cache |
-| 📥 **Private downloads** | Classroom-authorized attachments use attachment disposition and `nosniff` |
-| ✔️ **Server-side validation** | Required fields, duplicates, and password rules (on reset) are checked on the backend |
-| 🗄️ **Django ORM** | No manually constructed SQL; a unique constraint enforces one submission per student per assignment |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/key-dark.svg"><img src="assets/readme-icons/key.svg" alt="" width="18" height="18"></picture> **Password hashing** | Passwords are stored via Django's authentication system |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-lock-dark.svg"><img src="assets/readme-icons/account-lock.svg" alt="" width="18" height="18"></picture> **Session authentication** | Django session-based login/logout; dashboards use `never_cache` |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/shield-check-dark.svg"><img src="assets/readme-icons/shield-check.svg" alt="" width="18" height="18"></picture> **CSRF protection** | Django's CSRF middleware is enabled |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-check-dark.svg"><img src="assets/readme-icons/account-check.svg" alt="" width="18" height="18"></picture> **Login-protected views** | `@login_required` on dashboards and assignment/submission actions |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-switch-dark.svg"><img src="assets/readme-icons/account-switch.svg" alt="" width="18" height="18"></picture> **Role verification** | Role is checked at login and in every teacher/student view |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-key-dark.svg"><img src="assets/readme-icons/account-key.svg" alt="" width="18" height="18"></picture> **Ownership checks** | Only the teacher who created an assignment can edit or delete it; only enrolled students can submit |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/ruler-dark.svg"><img src="assets/readme-icons/ruler.svg" alt="" width="18" height="18"></picture> **Upload limits** | Streaming 10 MB cap and server-side file-type validation |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/timer-sand-dark.svg"><img src="assets/readme-icons/timer-sand.svg" alt="" width="18" height="18"></picture> **Reset rate limiting** | Password-reset attempts are limited per email in shared Redis cache |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/download-dark.svg"><img src="assets/readme-icons/download.svg" alt="" width="18" height="18"></picture> **Private downloads** | Classroom-authorized attachments use attachment disposition and `nosniff` |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/check-circle-dark.svg"><img src="assets/readme-icons/check-circle.svg" alt="" width="18" height="18"></picture> **Server-side validation** | Required fields, duplicates, and password rules (on reset) are checked on the backend |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/database-dark.svg"><img src="assets/readme-icons/database.svg" alt="" width="18" height="18"></picture> **Django ORM** | No manually constructed SQL; a unique constraint enforces one submission per student per assignment |
 
-> ⚠️ **Note:** This is a learning/portfolio project. The teacher classroom key should be replaced with a secure enrollment workflow before real-world use.
+> <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/alert-dark.svg"><img src="assets/readme-icons/alert.svg" alt="" width="18" height="18"></picture> **Note:** This is a learning/portfolio project. The teacher classroom key should be replaced with a secure enrollment workflow before real-world use.
 <br>
 
-## 🤝 Contributing
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/handshake-dark.svg"><img src="assets/readme-icons/handshake.svg" alt="" width="20" height="20"></picture> Contributing
 
 Any contributions you make are **greatly appreciated**!
 
-1. 🍴 Fork the project
-2. 🌿 Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. 💾 Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. 📤 Push to the branch (`git push origin feature/amazing-feature`)
-5. 🔃 Open a Pull Request
+1. <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/source-fork-dark.svg"><img src="assets/readme-icons/source-fork.svg" alt="" width="18" height="18"></picture> Fork the project
+2. <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/source-branch-dark.svg"><img src="assets/readme-icons/source-branch.svg" alt="" width="18" height="18"></picture> Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/content-save-dark.svg"><img src="assets/readme-icons/content-save.svg" alt="" width="18" height="18"></picture> Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/cloud-upload-dark.svg"><img src="assets/readme-icons/cloud-upload.svg" alt="" width="18" height="18"></picture> Push to the branch (`git push origin feature/amazing-feature`)
+5. <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/source-branch-dark.svg"><img src="assets/readme-icons/source-branch.svg" alt="" width="18" height="18"></picture> Open a Pull Request
 
-## 📄 License
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/file-document-outline-dark.svg"><img src="assets/readme-icons/file-document-outline.svg" alt="" width="20" height="20"></picture> License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
 
-## 👤 Contact
+## <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/account-dark.svg"><img src="assets/readme-icons/account.svg" alt="" width="20" height="20"></picture> Contact
 
 <div align="center">
 
@@ -220,7 +220,7 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 
 <br/>
 
-⭐ **If you found this project useful, please consider giving it a star!** ⭐
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/star-dark.svg"><img src="assets/readme-icons/star.svg" alt="" width="16" height="16"></picture> **If you found this project useful, please consider giving it a star!** <picture><source media="(prefers-color-scheme: dark)" srcset="assets/readme-icons/star-dark.svg"><img src="assets/readme-icons/star.svg" alt="" width="16" height="16"></picture>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,18,24&height=120&section=footer" width="100%" alt="footer"/>
 
