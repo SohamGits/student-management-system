@@ -54,7 +54,7 @@
                             </div>
 
                             {% if assignment.attachment %}
-                                <a href="{{ assignment.attachment.url }}" download
+                                <a href="{% url 'download_assignment_attachment' assignment.id %}"
                                    class="btn btn-outline-primary btn-sm mt-2">
                                     📎 {{ assignment.attachment_name }}
                                 </a>
@@ -81,7 +81,8 @@
                                     </div>
 
                                     <div>
-                                        <input type="file" class="submission-input d-none">
+                                        <input type="file" class="submission-input d-none"
+                                               accept=".pdf,.docx,.png,.jpg,.jpeg,.gif,.webp,.zip">
                                         <button type="button"
                                                 class="btn btn-outline-dark btn-sm btn-submit">
                                             {% if assignment.my_submission %}Resubmit{% else %}Make submission{% endif %}

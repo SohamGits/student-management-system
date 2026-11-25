@@ -30,7 +30,8 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="username"
-                                       name="username" placeholder="Username" required>
+                                       name="username" placeholder="Username"
+                                       value="{{ form.username }}" required>
                                 <label for="username">Username</label>
                             </div>
                         </div>
@@ -38,7 +39,8 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="email" class="form-control" id="email"
-                                       name="email" placeholder="Email" required>
+                                       name="email" placeholder="Email"
+                                       value="{{ form.email }}" required>
                                 <label for="email">Email</label>
                             </div>
                         </div>
@@ -46,7 +48,8 @@
                         <div class="col-12">
                             <div class="form-floating">
                                 <input type="date" class="form-control" id="dob"
-                                       name="dob" placeholder="Date of Birth" required>
+                                       name="dob" placeholder="Date of Birth"
+                                       value="{{ form.dob }}" required>
                                 <label for="dob">Date of Birth</label>
                             </div>
                         </div>

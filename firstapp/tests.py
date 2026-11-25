@@ -1,5 +1,13 @@
+import tempfile
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.core.cache import cache
+from django.db import connection
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import Client, TestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from .models import Assignment, Classroom, Submission, UserProfile
@@ -53,15 +61,17 @@ class LoginViewTests(TestCase):
                 self.assertContains(response, 'document.querySelector(".auth-wrapper .card")')
                 self.assertContains(response, "gsap.fromTo(")
 
-    def test_authenticated_user_does_not_see_navbar_on_login_pages(self):
+    def test_authenticated_user_is_redirected_to_dashboard_from_login_pages(self):
         self.client.force_login(self.teacher)
 
         for page in ("login", "home"):
             with self.subTest(page=page):
                 response = self.client.get(reverse(page))
 
-                self.assertNotContains(response, 'class="navbar navbar-expand navbar-app"')
-                self.assertNotContains(response, "Sign out")
+                self.assertRedirects(
+                    response,
+                    reverse("teacher_dashboard"),
+                )
 
     def test_student_login_redirects_to_student_dashboard(self):
         response = self.client.post(
@@ -89,6 +99,88 @@ class LoginViewTests(TestCase):
         self.assertRedirects(response, reverse("teacher_dashboard"))
         self.assertEqual(int(self.client.session["_auth_user_id"]), self.teacher.pk)
 
+    def test_dashboards_are_not_cached_after_sign_out(self):
+        for user, dashboard in (
+            (self.student, "student_dashboard"),
+            (self.teacher, "teacher_dashboard"),
+        ):
+            with self.subTest(role=user.profile.role):
+                dashboard_url = reverse(dashboard)
+                self.client.force_login(user)
+
+                dashboard_response = self.client.get(dashboard_url)
+                self.assertIn("no-store", dashboard_response["Cache-Control"])
+
+                self.client.post(reverse("logout"))
+                response = self.client.get(dashboard_url)
+
+                self.assertRedirects(
+                    response,
+                    f"{reverse('login')}?next={dashboard_url}",
+                )
+
+    def test_logo_navigation_then_sign_out_does_not_restore_dashboard(self):
+        for user, dashboard in (
+            (self.student, "student_dashboard"),
+            (self.teacher, "teacher_dashboard"),
+        ):
+            with self.subTest(role=user.profile.role):
+                dashboard_url = reverse(dashboard)
+                self.client.force_login(user)
+
+                logo_response = self.client.get(reverse("home"))
+                self.assertRedirects(logo_response, dashboard_url)
+
+                dashboard_response = self.client.get(dashboard_url)
+                self.assertContains(
+                    dashboard_response,
+                    'event.persisted && document.querySelector(".navbar-app")',
+                )
+
+                logout_response = self.client.post(reverse("logout"))
+                self.assertIn("no-store", logout_response["Cache-Control"])
+
+                response = self.client.get(dashboard_url)
+                self.assertRedirects(
+                    response,
+                    f"{reverse('login')}?next={dashboard_url}",
+                )
+
+    def test_logout_rejects_get_without_signing_out(self):
+        self.client.force_login(self.student)
+
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.student.pk)
+
+    def test_login_form_csrf_token_is_valid_and_rotates_after_login(self):
+        client = Client(enforce_csrf_checks=True)
+        response = client.get(reverse("login"))
+        self.assertIn("no-store", response["Cache-Control"])
+
+        csrf_cookie_before_login = client.cookies["csrftoken"].value
+        response_content = response.content.decode()
+        csrf_token = response_content.split(
+            'name="csrfmiddlewaretoken" value="', 1
+        )[1].split('"', 1)[0]
+
+        response = client.post(
+            reverse("login"),
+            {
+                "email": self.student.email,
+                "password": self.password,
+                "role": "student",
+                "csrfmiddlewaretoken": csrf_token,
+            },
+        )
+
+        self.assertRedirects(response, reverse("student_dashboard"))
+        self.assertNotEqual(
+            client.cookies["csrftoken"].value,
+            csrf_cookie_before_login,
+        )
+
     def test_invalid_password_shows_login_error(self):
         response = self.client.post(
             reverse("login"),
@@ -101,6 +193,58 @@ class LoginViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid email or password.")
+
+    def test_registration_errors_preserve_non_password_fields(self):
+        registration_inputs = (
+            {
+                "username": "retained-user",
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "first-password",
+                "confirm_password": "different-password",
+                "role": "student",
+            },
+            {
+                "username": self.student.username,
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "student",
+            },
+            {
+                "username": "retained-user",
+                "email": self.student.email,
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "student",
+            },
+            {
+                "username": "retained-user",
+                "email": "retained@example.com",
+                "dob": "2004-02-03",
+                "password": "matching-password",
+                "confirm_password": "matching-password",
+                "role": "teacher",
+                "teacher_key": "invalid-key",
+            },
+        )
+
+        for form_data in registration_inputs:
+            with self.subTest(error_fields=list(form_data)):
+                response = self.client.post(reverse("register"), form_data)
+                response_content = response.content.decode()
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(f'value="{form_data["username"]}"', response_content)
+                self.assertIn(f'value="{form_data["email"]}"', response_content)
+                self.assertIn(f'value="{form_data["dob"]}"', response_content)
+                self.assertNotIn(f'value="{form_data["password"]}"', response_content)
+                self.assertNotIn(
+                    f'value="{form_data["confirm_password"]}"',
+                    response_content,
+                )
 
 
 class AssignmentEditViewTests(TestCase):
@@ -240,7 +384,7 @@ class TeacherDashboardSubmissionTests(TestCase):
     def test_empty_assignment_shows_no_submissions_message(self):
         response = self.client.get(self.dashboard_url)
 
-        self.assertContains(response, "No Submissions yet")
+        self.assertContains(response, "No submissions yet.")
 
     def test_assignment_with_submission_shows_submitter_without_empty_message(self):
         Submission.objects.create(
@@ -252,5 +396,312 @@ class TeacherDashboardSubmissionTests(TestCase):
         response = self.client.get(self.dashboard_url)
 
         self.assertContains(response, self.student.username)
-        self.assertNotContains(response, "No Submissions yet")
+        self.assertNotContains(response, "No submissions yet.")
         self.assertNotContains(response, "Not submitted:")
+
+
+class StudentDashboardSubmissionTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            username="submitting-student",
+            email="submitting-student@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.student,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.classroom = Classroom.objects.create(
+            name="Submission classroom",
+            key="SUBMISSION-CLASSROOM",
+        )
+        self.classroom.students.add(self.student)
+        self.assignment = Assignment.objects.create(
+            classroom=self.classroom,
+            teacher=User.objects.create_user(
+                username="submission-teacher",
+                email="submission-teacher@example.com",
+            ),
+            title="Submit this assignment",
+            deadline="2030-01-01T12:00:00Z",
+        )
+        self.client.force_login(self.student)
+
+    def test_dashboard_loads_jquery_and_submission_script(self):
+        response = self.client.get(reverse("student_dashboard"))
+
+        self.assertContains(
+            response,
+            "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+        )
+        self.assertContains(response, 'src="/static/js/submission.js"')
+        self.assertContains(response, "Make submission")
+
+    def test_submission_queries_do_not_grow_with_assignment_count(self):
+        Submission.objects.create(
+            assignment=self.assignment,
+            student=self.student,
+            file="submission_1.txt",
+        )
+        dashboard_url = reverse("student_dashboard")
+
+        with CaptureQueriesContext(connection) as one_submission_queries:
+            self.client.get(dashboard_url)
+
+        for index in range(2, 13):
+            assignment = Assignment.objects.create(
+                classroom=self.classroom,
+                teacher=self.assignment.teacher,
+                title=f"Assignment {index}",
+                deadline="2030-01-01T12:00:00Z",
+            )
+            Submission.objects.create(
+                assignment=assignment,
+                student=self.student,
+                file=f"submission_{index}.txt",
+            )
+
+        with CaptureQueriesContext(connection) as twelve_submission_queries:
+            self.client.get(dashboard_url)
+
+        self.assertEqual(
+            len(one_submission_queries),
+            len(twelve_submission_queries),
+        )
+
+    def test_student_can_submit_assignment_file(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        storage_patch = patch.object(
+            Submission._meta.get_field("file"),
+            "storage",
+            FileSystemStorage(location=temp_dir.name),
+        )
+        storage_patch.start()
+        self.addCleanup(storage_patch.stop)
+
+        response = self.client.post(
+            reverse("submit_assignment", args=[self.assignment.pk]),
+            {
+                "file": SimpleUploadedFile(
+                    "homework.pdf",
+                    b"%PDF-1.7\nAssignment response",
+                    content_type="application/pdf",
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["file_name"], "homework.pdf")
+        self.assertTrue(
+            Submission.objects.filter(
+                assignment=self.assignment,
+                student=self.student,
+            ).exists()
+        )
+
+    def test_student_upload_rejects_unsupported_or_mismatched_file_types(self):
+        for filename, content in (
+            ("homework.html", b"<html>active content</html>"),
+            ("homework.pdf", b"<html>not a PDF</html>"),
+        ):
+            with self.subTest(filename=filename):
+                response = self.client.post(
+                    reverse("submit_assignment", args=[self.assignment.pk]),
+                    {
+                        "file": SimpleUploadedFile(
+                            filename,
+                            content,
+                            content_type="application/pdf",
+                        ),
+                    },
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertFalse(
+                    Submission.objects.filter(
+                        assignment=self.assignment,
+                        student=self.student,
+                    ).exists()
+                )
+
+    @override_settings(MAX_UPLOAD_BYTES=10, MAX_REQUEST_BODY_BYTES=10000)
+    def test_student_upload_size_limit_is_enforced_during_request_parsing(self):
+        response = self.client.post(
+            reverse("submit_assignment", args=[self.assignment.pk]),
+            {
+                "file": SimpleUploadedFile(
+                    "homework.pdf",
+                    b"%PDF-1.7\nthis is too large",
+                    content_type="application/pdf",
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 413)
+        self.assertFalse(
+            Submission.objects.filter(
+                assignment=self.assignment,
+                student=self.student,
+            ).exists()
+        )
+
+
+class AssignmentAttachmentSecurityTests(TestCase):
+    def setUp(self):
+        self.teacher = User.objects.create_user(
+            username="attachment-teacher",
+            email="attachment-teacher@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.teacher,
+            date_of_birth="1985-01-01",
+            role="teacher",
+        )
+        self.student = User.objects.create_user(
+            username="attachment-student",
+            email="attachment-student@example.com",
+        )
+        UserProfile.objects.create(
+            user=self.student,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.classroom = Classroom.objects.create(
+            name="Attachment classroom",
+            key="ATTACHMENT-CLASSROOM",
+        )
+        self.classroom.teachers.add(self.teacher)
+        self.classroom.students.add(self.student)
+        self.client.force_login(self.teacher)
+
+    def test_teacher_cannot_create_assignment_with_active_content_upload(self):
+        response = self.client.post(
+            reverse("create_assignment"),
+            {
+                "title": "Unsafe attachment",
+                "description": "",
+                "deadline": "2030-01-01T12:00",
+                "attachment": SimpleUploadedFile(
+                    "unsafe.svg",
+                    b"<svg xmlns='http://www.w3.org/2000/svg'></svg>",
+                    content_type="image/svg+xml",
+                ),
+            },
+        )
+
+        self.assertRedirects(response, reverse("teacher_dashboard"))
+        self.assertFalse(Assignment.objects.filter(title="Unsafe attachment").exists())
+
+    def test_assignment_attachment_download_is_private_and_an_attachment(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            storage_patch = patch.object(
+                Assignment._meta.get_field("attachment"),
+                "storage",
+                FileSystemStorage(location=temp_dir),
+            )
+            storage_patch.start()
+            try:
+                assignment = Assignment.objects.create(
+                    classroom=self.classroom,
+                    teacher=self.teacher,
+                    title="Downloadable assignment",
+                    deadline="2030-01-01T12:00:00Z",
+                    attachment=SimpleUploadedFile(
+                        "instructions.pdf",
+                        b"%PDF-1.7\ninstructions",
+                        content_type="application/pdf",
+                    ),
+                )
+                self.client.force_login(self.student)
+                response = self.client.get(
+                    reverse(
+                        "download_assignment_attachment",
+                        args=[assignment.pk],
+                    )
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertTrue(
+                    response["Content-Disposition"].startswith("attachment;")
+                )
+                self.assertEqual(
+                    response["Content-Type"],
+                    "application/octet-stream",
+                )
+                self.assertEqual(response["Cache-Control"], "private, no-store")
+                self.assertEqual(response["X-Content-Type-Options"], "nosniff")
+                response.close()
+            finally:
+                storage_patch.stop()
+
+    def test_non_classroom_user_cannot_download_assignment_attachment(self):
+        assignment = Assignment.objects.create(
+            classroom=self.classroom,
+            teacher=self.teacher,
+            title="Private assignment",
+            deadline="2030-01-01T12:00:00Z",
+            attachment="assignment_attachments/instructions.pdf",
+        )
+        outsider = User.objects.create_user(username="outsider")
+        UserProfile.objects.create(
+            user=outsider,
+            date_of_birth="2005-01-01",
+            role="student",
+        )
+        self.client.force_login(outsider)
+
+        response = self.client.get(
+            reverse("download_assignment_attachment", args=[assignment.pk])
+        )
+
+        self.assertEqual(response.status_code, 404)
+
+
+class ForgotPasswordViewTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def test_page_loads_jquery_and_error_display(self):
+        response = self.client.get(reverse("forgot_password"))
+
+        self.assertContains(
+            response,
+            "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js",
+        )
+        self.assertContains(response, 'src="/static/js/forgot-password.js"')
+        self.assertContains(response, 'id="reset-error"')
+
+    def test_invalid_credentials_return_displayable_error(self):
+        response = self.client.post(
+            reverse("forgot_password"),
+            {
+                "email": "unknown@example.com",
+                "dob": "2005-01-01",
+                "new_password": "a-strong-new-password-123",
+                "confirm_password": "a-strong-new-password-123",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["error"],
+            "Email and date of birth do not match any account.",
+        )
+
+    def test_password_reset_lockout_applies_after_five_attempts(self):
+        payload = {
+            "email": "unknown@example.com",
+            "dob": "2005-01-01",
+            "new_password": "a-strong-new-password-123",
+            "confirm_password": "a-strong-new-password-123",
+        }
+
+        for attempt in range(5):
+            with self.subTest(attempt=attempt + 1):
+                response = self.client.post(reverse("forgot_password"), payload)
+                self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(reverse("forgot_password"), payload)
+
+        self.assertEqual(response.status_code, 429)

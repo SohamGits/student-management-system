@@ -25,8 +25,8 @@
     --surface-muted: #F8FAF8;
 
     --text-primary: #202C29;
-    --text-secondary: #687772;
-    --text-muted: #87928D;
+    --text-secondary: #5E6D68;
+    --text-muted: #66736E;
 
     --border: #E1E7E2;
     --border-strong: #CCD6CF;
@@ -190,7 +190,7 @@ h5 {
 .brand-caption {
     margin-top: 3px;
     color: var(--text-muted);
-    font-size: 0.58rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.105em;
     line-height: 1.3;
@@ -471,6 +471,19 @@ h5 {
     background: #9F3034;
 }
 
+.btn-outline-danger {
+    border-color: #E8C4C5;
+    background: #fff;
+    color: var(--danger);
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    color: #9F3034;
+}
+
 .btn-outline-primary {
     border-color: #B8D3C6;
     background: #fff;
@@ -545,7 +558,7 @@ h5 {
 }
 
 .form-control::placeholder {
-    color: #9AA59F;
+    color: #6B7873;
 }
 
 .form-control:hover,
@@ -1104,6 +1117,14 @@ input[type="file"]::file-selector-button {
 }
 
 @media (max-width: 575.98px) {
+    .user-details {
+        display: none;
+    }
+
+    .btn-logout {
+        white-space: nowrap;
+    }
+
     body {
         font-size: 0.9rem;
     }

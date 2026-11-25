@@ -1,0 +1,28 @@
+cat > .gitignore << 'EOF'
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets and environment
+.env
+.env.*
+
+# Database
+db.sqlite3
+*.sqlite3
+
+# Uploaded files
+media/
+private_media/
+
+# Output of collectstatic (used on the server)
+staticfiles/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+EOF

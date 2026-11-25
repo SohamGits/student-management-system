@@ -1,4 +1,6 @@
-{% if assignment.is_overdue %}
+{% if assignment.my_submission %}
+    <span class="badge text-bg-success">Submitted · due {{ assignment.deadline|date:"d M, H:i" }}</span>
+{% elif assignment.is_overdue %}
     <span class="badge text-bg-danger deadline-badge"
           data-deadline="{{ assignment.deadline|date:'c' }}"
           data-label="{{ assignment.deadline|date:'d M Y, H:i' }}">
